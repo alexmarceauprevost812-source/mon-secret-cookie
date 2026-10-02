@@ -4,8 +4,11 @@ import json
 import socket
 import xml.etree.ElementTree as ET
 from .core import AuditError, run
+from . import platforms
 
 def interfaces():
+    if platforms.is_windows():
+        return platforms.windows_interfaces()
     return json.loads(run(['ip','-j','address','show']))
 
 def local_addresses():
@@ -22,6 +25,8 @@ def local_addresses():
     return sorted(addresses)
 
 def ports():
+    if platforms.is_windows():
+        return platforms.windows_ports()
     listeners=[]
     for line in run(['ss','-H','-lntu']).splitlines():
         fields=line.split()
@@ -40,6 +45,14 @@ def ports():
     return {'listeners':listeners,'service_note':'noms du registre local /etc/services ; logiciel réel non identifié'}
 
 def wifi_info():
+    if platforms.is_windows():
+        return {'interfaces':run(['netsh','wlan','show','interfaces']),
+                'note':'Windows peut exiger une autorisation de localisation pour SSID/BSSID.'}
+    if platforms.is_termux():
+        info=json.loads(run(['termux-wifi-connectioninfo']))
+        allowed=('ssid','bssid','ip','frequency_mhz','link_speed_mbps','rssi','supplicant_state')
+        return {'connection':{key:info[key] for key in allowed if key in info},
+                'note':'Termux:API et permissions Android nécessaires ; aucun secret collecté.'}
     devices = run(['iw','dev'])
     names = [line.strip().split()[1] for line in devices.splitlines() if line.strip().startswith('Interface ')]
     return {'interfaces':[{'interface':name,'link':run(['iw','dev',name,'link'])} for name in names]}
@@ -64,8 +77,32 @@ def scan_address(address, count=100):
         args.append('-6')
     return parse_nmap(run(args+[str(ip)],timeout=40))
 
+def local_identity():
+    from .core import device_id
+    result={**device_id(),'hostname':socket.gethostname()}
+    try:
+        result['interfaces']=interfaces()
+    except AuditError as error:
+        if not platforms.is_termux():
+            raise
+        result['interfaces']=[]
+        result['limitation']='Android ne permet pas cet inventaire : '+str(error)
+    return result
+
+
 def scan_local():
-    return {'hosts':[host for address in local_addresses() for host in scan_address(address,20)]}
+    limitation=None
+    try:
+        addresses=local_addresses()
+    except AuditError as error:
+        if not platforms.is_termux():
+            raise
+        addresses=['127.0.0.1','::1']
+        limitation='Interfaces Android indisponibles ; localhost uniquement : '+str(error)
+    result={'addresses':addresses,'hosts':[host for address in addresses for host in scan_address(address,20)]}
+    if limitation:
+        result['limitation']=limitation
+    return result
 
 def authorized_scan(targets, authorized):
     if not authorized:
@@ -79,7 +116,7 @@ def authorized_scan(targets, authorized):
 
 def devices(cidr=None, authorized=False):
     if cidr is None:
-        return {'mode':'cache voisin passif','neighbors':json.loads(run(['ip','-j','neigh','show']))}
+        return {'mode':'cache voisin passif','neighbors':platforms.windows_neighbors() if platforms.is_windows() else json.loads(run(['ip','-j','neigh','show']))}
     if not authorized:
         raise AuditError("Découverte active : --authorized requis pour votre LAN.")
     net = ipaddress.ip_network(cidr,strict=True)
@@ -102,7 +139,7 @@ def wifite_info():
     import shutil
     executable=shutil.which('wifite')
     return {'installed':bool(executable),'executable':executable,
-            'installation':'bash install.sh --with-wifite',
+            'installation':'Wifite est prévu sous Kali/Ubuntu : bash install.sh --with-wifite',
             'manual_help':'wifite --help',
             'scope':'Votre Wi-Fi ou laboratoire explicitement autorisé uniquement.',
             'automation':'Aucune attaque ou capture lancée par mon-secret-cookie.'}

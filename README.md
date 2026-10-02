@@ -1,6 +1,6 @@
 # mon-secret-cookie
 
-Outil CLI Python pour **Linux (Kali Linux et Ubuntu)**, audit défensif et laboratoire autorisé. Interface interactive TI-LEX noir/vert, avec logo en relief « LE SECRET » vert lime et « COOKIE » orange. Le logo se simplifie dans les petits terminaux ; `NO_COLOR=1` désactive ses couleurs. Python 3.10 minimum.
+Outil CLI Python pour **Linux (Kali Linux et Ubuntu), Termux (Android) et Windows**, audit défensif et laboratoire autorisé. Interface interactive TI-LEX noir/vert, avec logo en relief « LE SECRET » vert lime et « COOKIE » orange. Le logo se simplifie dans les petits terminaux ; `NO_COLOR=1` désactive ses couleurs. Python 3.10 minimum.
 
 ## Installation
 
@@ -98,7 +98,7 @@ Identifiant et résultats dans `~/.local/state/mon-secret-cookie` (répertoire 0
 
 ## Développement et tests
 
-Modules : `core` (état, exécution, rapports), `network`, `cookies`, `passwords`, `lab` (Flask), `cli` (arguments et menu).
+Modules : `platforms` (Windows et Termux), `branding` (logo), `core` (état, exécution, rapports), `network`, `cookies`, `passwords`, `lab` (Flask), `cli` (arguments et menu).
 
 ```bash
 python3 -m venv .venv
@@ -110,3 +110,56 @@ bash -n install.sh
 Tests : persistance et permissions, refus des liens/fichiers non réguliers, masquage des cookies, autorisation des scans, restriction au LAN local, IPv6, rapports et cookie Flask. L'installation apt doit être vérifiée sur une machine Kali/Ubuntu ; les tests Python ne modifient pas vos paquets système.
 
 `device-id` affiche aussi le hostname et les interfaces locales. `scan-local --device-id ID` refuse un ID différent et inclut le Device ID dans le résultat. Cet ID identifie cette installation, ne prouve pas la propriété et ne permet pas de contrôler ou de scanner un appareil distant. Copiez l’ID exact affiché par `device-id`.
+
+
+## Termux sur Android
+
+Utiliser Termux depuis une source officielle compatible avec les extensions ([projet Termux](https://termux.dev/en/)). Ne pas placer le dépôt ou le venv sur le stockage partagé Android : conserver le projet dans le dossier privé de Termux.
+
+```bash
+pkg install git
+git clone https://github.com/alexmarceauprevost812-source/mon-secret-cookie.git
+cd mon-secret-cookie
+bash install-termux.sh
+export PATH="$HOME/.local/bin:$PATH"
+mon-secret-cookie device-id
+mon-secret-cookie scan-local
+mon-secret-cookie menu
+```
+
+Option Wi-Fi : `bash install-termux.sh --with-wifi-info`, plus l'application Android Termux:API de la même source que Termux et les permissions demandées. `wifi-info` utilise uniquement `termux-wifi-connectioninfo` et filtre les champs non secrets. Ne pas rooter le téléphone pour cet outil. Android peut interdire `ip`/`ss`, les sondes Nmap ou la lecture du cache voisin : ces commandes signalent l'erreur ; `device-id` reste utilisable et `scan-local` se limite explicitement à localhost si les interfaces sont inaccessibles. La découverte active est refusée si l'appartenance au LAN ne peut pas être vérifiée. Aucune tentative de contourner les restrictions Android.
+
+John, Hashcat et Wifite ne sont pas installés automatiquement par l'installateur Termux ; leur disponibilité dépend de la plateforme et des paquets. Les cookies locaux, Cookie Lab, Flask Lab et rapports ne nécessitent pas ces outils.
+
+## Windows 10/11 (PowerShell / Windows Terminal)
+
+Installer [Python 3.10+](https://www.python.org/downloads/windows/) et Git pour cloner le dépôt, ou télécharger le ZIP du dépôt. Installer [Nmap pour Windows](https://nmap.org/book/inst-windows.html) pour les scans et ajouter le dossier contenant `nmap.exe` au PATH.
+
+```powershell
+git clone https://github.com/alexmarceauprevost812-source/mon-secret-cookie.git
+cd mon-secret-cookie
+& .\install-windows.ps1
+mon-secret-cookie device-id
+mon-secret-cookie scan-local
+mon-secret-cookie ports
+mon-secret-cookie wifi-info
+mon-secret-cookie menu
+```
+
+Si votre politique PowerShell interdit le script, ne pas modifier la politique globale : utiliser l'installation manuelle ci-dessous (dans le dossier du dépôt).
+
+```powershell
+py -3 -m venv .venv
+& .\.venv\Scripts\python.exe -m pip install .
+& .\.venv\Scripts\mon-secret-cookie.exe menu
+```
+
+L'installateur crée un environnement sous `%LOCALAPPDATA%\mon-secret-cookie`, ajoute le lanceur au PATH de la session actuelle et affiche le dossier à ajouter au PATH utilisateur pour les sessions suivantes. Il ne télécharge pas automatiquement de programmes externes. Les interfaces, sockets et voisins utilisent les commandes fixes PowerShell `Get-NetIPAddress`, `Get-NetIPInterface`, `Get-NetTCPConnection`, `Get-NetUDPEndpoint` et `Get-NetNeighbor`. Le Wi-Fi utilise `netsh wlan show interfaces`, jamais les clés des profils ; Windows peut demander une autorisation de localisation.
+
+John/Hashcat sont optionnels et doivent être installés depuis leurs distributions officielles avec leurs exécutables dans PATH. Le Password Lab reste limité au même mode MD5 et au même dictionnaire. Wifite n'est pas pris en charge nativement sous Windows ; utiliser Kali/Ubuntu pour cette fonction. WSL est une autre possibilité pour le CLI Linux, mais son réseau et son ID correspondent à l'environnement WSL, et l'accès Wi-Fi matériel n'est pas garanti.
+
+Sous Windows, l'état est dans `%LOCALAPPDATA%\mon-secret-cookie`. La propriété des fichiers est vérifiée par leur SID Windows, les liens/points de réanalyse sont refusés, et les ACL héritées du profil utilisateur remplacent les permissions POSIX 0600/0700. Les exports dans un dossier partagé héritent des ACL de ce dossier : conserver les données d'audit dans votre profil privé.
+
+### Niveau de validation
+
+Les adaptateurs Windows et les restrictions Termux sont couverts par des tests simulés sur Linux. Le CLI et ses fonctions Linux ont été exécutés réellement. Les installateurs Windows/Android et leurs permissions réseau doivent encore être validés sur des appareils physiques ; cette version ne prétend pas à une validation native complète.

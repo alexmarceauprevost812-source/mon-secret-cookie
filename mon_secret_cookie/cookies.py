@@ -1,7 +1,7 @@
 """Analyse de fichiers Netscape locaux sans exposition des valeurs."""
 from pathlib import Path
 import time
-from .core import AuditError, owned_text, private_write
+from .core import AuditError, owned_text, private_write, is_owned
 
 DEMO = "# Netscape HTTP Cookie File\n#HttpOnly_localhost\tFALSE\t/\tFALSE\t0\tlab_session\tFICTIF_SANS_SESSION_REELLE\nlocalhost\tFALSE\t/\tTRUE\t0\tlab_secure\tFICTIF\n"
 
@@ -41,7 +41,7 @@ def search(directory):
         dirs[:] = [d for d in dirs if not (Path(current)/d).is_symlink()] if depth<4 else []
         if 'cookies.txt' in names:
             p=Path(current)/'cookies.txt'
-            if not p.is_symlink() and p.stat().st_uid==os.getuid():
+            if not p.is_symlink() and is_owned(p):
                 found.append(str(p))
         if len(found)>=100:
             break

@@ -43,6 +43,16 @@ def _word(text, face, shadow, colored):
 
 
 def logo():
+    if sys.platform == 'win32' and sys.stdout.isatty():
+        # Windows Terminal / console VT : activation des couleurs si disponible.
+        try:
+            import ctypes
+            handle=ctypes.windll.kernel32.GetStdHandle(-11)
+            mode=ctypes.c_ulong()
+            if ctypes.windll.kernel32.GetConsoleMode(handle,ctypes.byref(mode)):
+                ctypes.windll.kernel32.SetConsoleMode(handle,mode.value | 4)
+        except (AttributeError,OSError):
+            pass
     colored = sys.stdout.isatty() and 'NO_COLOR' not in os.environ and os.environ.get('TERM') != 'dumb'
     width = shutil.get_terminal_size(fallback=(80, 24)).columns
     if width < 54:

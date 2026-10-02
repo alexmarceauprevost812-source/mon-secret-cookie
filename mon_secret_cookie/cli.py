@@ -6,8 +6,8 @@ from . import core, network, cookies, passwords, lab
 from .branding import logo
 
 def parser():
-    p=argparse.ArgumentParser(prog='mon-secret-cookie',description='Audit défensif Linux et laboratoires autorisés')
-    p.add_argument('--version',action='version',version='mon-secret-cookie 0.1.0')
+    p=argparse.ArgumentParser(prog='mon-secret-cookie',description='Audit défensif Linux, Termux et Windows ; laboratoires autorisés')
+    p.add_argument('--version',action='version',version='mon-secret-cookie 0.2.0')
     s=p.add_subparsers(dest='command')
     for name in ('device-id','ports','wifi-info','wifite','menu'):
         s.add_parser(name)
@@ -60,7 +60,7 @@ def main(argv=None):
             lab.serve(a.port); return 0
         if a.command=='scan-local' and a.device_id and a.device_id != core.device_id()['device_id']:
             raise core.AuditError('Cet ID ne correspond pas à cette machine. Lancez device-id localement.')
-        actions={'device-id':lambda:{**core.device_id(),'hostname':network.socket.gethostname(),'interfaces':network.interfaces()},'scan-local':lambda:{**core.device_id(),**network.scan_local()},'ports':network.ports,
+        actions={'device-id':network.local_identity,'scan-local':lambda:{**core.device_id(),**network.scan_local()},'ports':network.ports,
                  'wifi-info':network.wifi_info,'wifite':network.wifite_info,'devices':lambda:network.devices(a.cidr,a.authorized),
                  'nmap':lambda:network.authorized_scan(a.targets,a.authorized),
                  'cookies':lambda:cookies.analyze(a.file) if a.file else cookies.search(a.search),
