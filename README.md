@@ -1,6 +1,6 @@
 # mon-secret-cookie
 
-Outil CLI Python pour **Linux (Kali Linux et Ubuntu)**, audit défensif et laboratoire autorisé. Interface interactive TI-LEX noir/vert. Python 3.10 minimum.
+Outil CLI Python pour **Linux (Kali Linux et Ubuntu)**, audit défensif et laboratoire autorisé. Interface interactive TI-LEX noir/vert, avec logo en relief « LE SECRET » vert lime et « COOKIE » orange. Le logo se simplifie dans les petits terminaux ; `NO_COLOR=1` désactive ses couleurs. Python 3.10 minimum.
 
 ## Installation
 

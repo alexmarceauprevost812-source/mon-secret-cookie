@@ -3,6 +3,7 @@ import argparse
 import json
 import sys
 from . import core, network, cookies, passwords, lab
+from .branding import logo
 
 def parser():
     p=argparse.ArgumentParser(prog='mon-secret-cookie',description='Audit défensif Linux et laboratoires autorisés')
@@ -26,6 +27,7 @@ def menu():
     choices={'1':['device-id'],'2':['scan-local'],'3':['ports'],'4':['wifi-info'],'5':['devices'],
              '6':['cookie-lab'],'7':['password-lab'],'8':['flask-lab']}
     while True:
+        print(logo())
         color='\033[40;32m' if sys.stdout.isatty() else ''
         reset='\033[0m' if color else ''
         print(color+'TI-LEX — MON-SECRET-COOKIE\n1 Device ID  2 Scan local  3 Ports  4 Wi-Fi\n5 LAN passif  6 Cookie Lab  7 Password Lab  8 Flask Lab\n9 Nmap autorisé  10 Cookies locaux  11 Rapport  12 LAN actif  0 Quitter'+reset)
