@@ -9,7 +9,7 @@ def parser():
     p=argparse.ArgumentParser(prog='mon-secret-cookie',description='Audit défensif Linux, Termux et Windows ; laboratoires autorisés')
     p.add_argument('--version',action='version',version='mon-secret-cookie 0.2.0')
     s=p.add_subparsers(dest='command')
-    for name in ('device-id','ports','wifi-info','wifite','menu'):
+    for name in ('device-id','ports','wifi-info','wifite','cookie-guide','menu'):
         s.add_parser(name)
     c=s.add_parser('scan-local'); c.add_argument('--device-id',help='ID applicatif attendu de cette machine')
     d=s.add_parser('devices'); d.add_argument('--cidr'); d.add_argument('--authorized',action='store_true')
@@ -25,12 +25,12 @@ def parser():
 
 def menu():
     choices={'1':['device-id'],'2':['scan-local'],'3':['ports'],'4':['wifi-info'],'5':['devices'],
-             '6':['cookie-lab'],'7':['password-lab'],'8':['flask-lab']}
+             '6':['cookie-lab'],'7':['password-lab'],'8':['flask-lab'],'13':['cookie-guide']}
     while True:
         print(logo())
         color='\033[40;32m' if sys.stdout.isatty() else ''
         reset='\033[0m' if color else ''
-        print(color+'TI-LEX — MON-SECRET-COOKIE\n1 Device ID  2 Scan local  3 Ports  4 Wi-Fi\n5 LAN passif  6 Cookie Lab  7 Password Lab  8 Flask Lab\n9 Nmap autorisé  10 Cookies locaux  11 Rapport  12 LAN actif  0 Quitter'+reset)
+        print(color+'TI-LEX — MON-SECRET-COOKIE\n1 Device ID  2 Scan local  3 Ports  4 Wi-Fi\n5 LAN passif  6 Cookie Lab  7 Password Lab  8 Flask Lab\n9 Nmap autorisé  10 Cookies locaux  11 Rapport  12 LAN actif\n13 Guide des cookies  0 Quitter'+reset)
         selection=input('TI-LEX > ').strip()
         if selection=='0':
             return
@@ -54,6 +54,10 @@ def main(argv=None):
             if not sys.stdin.isatty():
                 p.print_help(); return 0
             menu(); return 0
+        if a.command=='cookie-guide':
+            from importlib.resources import files
+            print(files('mon_secret_cookie').joinpath('GUIDE_COOKIES.md').read_text(encoding='utf-8'))
+            return 0
         if a.command=='flask-lab':
             if not 1024<=a.port<=65535:
                 raise core.AuditError('Port entre 1024 et 65535 requis.')

@@ -14,3 +14,6 @@ mon-secret-cookie = "mon_secret_cookie.cli:main"
 
 [tool.setuptools.packages.find]
 include = ["mon_secret_cookie*"]
+
+[tool.setuptools.package-data]
+mon_secret_cookie = ["GUIDE_COOKIES.md"]

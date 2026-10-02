@@ -38,6 +38,7 @@ python3 -m venv .venv
 | `nmap IP [IP ...] --authorized` | Scan TCP des 100 ports courants, maximum 16 IP explicites |
 | `cookies --file FICHIER` | Métadonnées d'un fichier Netscape cookies.txt appartenant à votre utilisateur |
 | `cookies --search DOSSIER` | Recherche de cookies.txt, profondeur 4, maximum 100 résultats |
+| `cookie-guide` | Guide français pas à pas : Flask, Set-Cookie, curl, analyse et suppression |
 | `cookie-lab --output cookies.txt` | Création d'un fichier pédagogique avec cookies fictifs |
 | `password-lab --engine john` | Démonstration MD5 avec John the Ripper |
 | `password-lab --engine hashcat` | Même démonstration avec Hashcat |
@@ -46,7 +47,7 @@ python3 -m venv .venv
 | `report --format txt --output rapport.txt` | Export texte |
 | `menu` | Menu interactif TI-LEX |
 
-Sans argument, le menu s'ouvre dans un terminal interactif ; sinon l'aide s'affiche. Toutes les sorties d'audit sont JSON. Les erreurs vont vers stderr et produisent un code non nul. Ctrl+C interrompt l'opération.
+Sans argument, le menu s'ouvre dans un terminal interactif ; sinon l'aide s'affiche. Toutes les sorties d'audit sont JSON ; `cookie-guide` affiche un guide en texte. Les erreurs vont vers stderr et produisent un code non nul. Ctrl+C interrompt l'opération.
 
 ## Exemples
 
@@ -163,3 +164,7 @@ Sous Windows, l'état est dans `%LOCALAPPDATA%\mon-secret-cookie`. La propriét�
 ### Niveau de validation
 
 Les adaptateurs Windows et les restrictions Termux sont couverts par des tests simulés sur Linux. Le CLI et ses fonctions Linux ont été exécutés réellement. Les installateurs Windows/Android et leurs permissions réseau doivent encore être validés sur des appareils physiques ; cette version ne prétend pas à une validation native complète.
+
+## Guide des cookies
+
+Consultez le [guide pas à pas](mon_secret_cookie/GUIDE_COOKIES.md), ou lancez `mon-secret-cookie cookie-guide` (option 13 du menu). Il explique comment créer un cookie fictif sur `127.0.0.1:8000`, voir `Set-Cookie`, l’enregistrer avec curl, le renvoyer, l’analyser et l’effacer. Les commandes sont adaptées à Linux, Termux et PowerShell Windows.
