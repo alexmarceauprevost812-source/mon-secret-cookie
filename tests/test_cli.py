@@ -147,6 +147,27 @@ class Tests(unittest.TestCase):
         self.assertFalse(any('Voisins' in t for t in titles))
         self.assertTrue(any('Voisins' in s['titre'] for s in audit.collect()['sections']))
 
+    def test_record_survives_disk_full(self):
+        import errno
+        enospc=OSError(errno.ENOSPC,'No space left on device')
+        self.assertTrue(core.disk_full_hint(enospc))
+        self.assertIsNone(core.disk_full_hint(OSError(errno.EACCES,'perm')))
+        with patch('mon_secret_cookie.core.private_write',side_effect=enospc), \
+             contextlib.redirect_stderr(io.StringIO()) as err:
+            result=core.record('device-id',{'device_id':'MSC-X'})
+        self.assertEqual(result,{'device_id':'MSC-X'})
+        self.assertIn('Disque plein',err.getvalue())
+
+    def test_command_output_despite_failed_audit(self):
+        import errno
+        enospc=OSError(errno.ENOSPC,'No space left on device')
+        with patch('mon_secret_cookie.network.ports',return_value={'listeners':[]}), \
+             patch('mon_secret_cookie.core.private_write',side_effect=enospc), \
+             contextlib.redirect_stdout(io.StringIO()) as out, \
+             contextlib.redirect_stderr(io.StringIO()):
+            self.assertEqual(main(['ports']),0)
+        self.assertIn('listeners',out.getvalue())
+
     def test_flask_cookie_and_host(self):
         app=create_app();app.testing=True
         c=app.test_client()
