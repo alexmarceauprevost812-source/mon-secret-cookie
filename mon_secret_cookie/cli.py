@@ -32,9 +32,20 @@ def menu():
              '6':['cookie-lab'],'7':['password-lab'],'8':['flask-lab'],'13':['cookie-guide'],'14':['bilan']}
     while True:
         print(logo())
-        color='\033[40;32m' if sys.stdout.isatty() else ''
-        reset='\033[0m' if color else ''
-        print(color+'TI-LEX — MON-SECRET-COOKIE\n1 Device ID  2 Scan local  3 Ports  4 Wi-Fi\n5 LAN passif  6 Cookie Lab  7 Password Lab  8 Flask Lab\n9 Nmap autorisé  10 Cookies locaux  11 Rapport  12 LAN actif\n13 Guide des cookies  14 Bilan appareil (texte)  0 Quitter'+reset)
+        on=sys.stdout.isatty()
+        green='\033[40;32m' if on else ''          # texte vert sur fond noir
+        sky='\033[40;1;38;5;117m' if on else ''    # numéros en bleu ciel
+        reset='\033[0m' if on else ''
+        def e(n,label):
+            return f'{sky}{n}{green} {label}'
+        lignes=['TI-LEX — MON-SECRET-COOKIE',
+                '— Appareil local —   '+'  '.join([e('1','Device ID'),e('2','Scan local'),e('3','Ports'),e('4','Wi-Fi'),e('14','Bilan (texte)')]),
+                '— Réseau (autorisé) — '+'  '.join([e('5','LAN passif'),e('12','LAN actif'),e('9','Nmap autorisé')]),
+                '— Cookies —           '+'  '.join([e('10','Cookies locaux'),e('6','Cookie Lab'),e('13','Guide des cookies')]),
+                '— Labo —              '+'  '.join([e('7','Password Lab'),e('8','Flask Lab')]),
+                '— Rapports —          '+'  '.join([e('11','Rapport'),e('15','Rapport multi-appareils')]),
+                e('0','Quitter')]
+        print(green+'\n'.join(lignes)+reset)
         selection=input('TI-LEX > ').strip()
         if selection=='0':
             return
@@ -51,6 +62,10 @@ def menu():
         elif selection=='14':
             name=input('Étiquette de cet appareil (vide = aucune) : ').strip()
             args=['bilan',*(['--label',name] if name else [])]
+        elif selection=='15':
+            files=input('Rapports JSON à regrouper (séparés par espaces) : ').strip().split()
+            out=input('Fichier de sortie : ').strip()
+            args=['multi-report','--inputs',*files,'--output',out] if files and out else None
         if args:
             main(args)
 
