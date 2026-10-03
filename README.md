@@ -50,6 +50,7 @@ python3 -m venv .venv
 | `flask-lab --port 5000` | Laboratoire web sur 127.0.0.1 uniquement |
 | `report --format json --output rapport.json` | Export des résultats déjà enregistrés |
 | `report --format txt --output rapport.txt` | Export texte |
+| `multi-report --inputs r1.json r2.json --output combo.txt` | Regroupe par `device_id` plusieurs rapports JSON exportés sur vos appareils (local, aucune lecture réseau) |
 | `menu` | Menu interactif TI-LEX |
 
 Sans argument, le menu s'ouvre dans un terminal interactif ; sinon l'aide s'affiche. Toutes les sorties d'audit sont JSON ; `cookie-guide` affiche un guide en texte. Les erreurs vont vers stderr et produisent un code non nul. Ctrl+C interrompt l'opération.
@@ -75,6 +76,9 @@ mon-secret-cookie nmap 192.168.1.10 --authorized
 mon-secret-cookie cookie-lab --output cookies.txt
 mon-secret-cookie cookies --file cookies.txt
 mon-secret-cookie cookies --search ./mon-laboratoire
+# Sur chaque appareil : exporter un rapport JSON, puis les regrouper par appareil :
+mon-secret-cookie report --format json --output rapport-telephone-1.json
+mon-secret-cookie multi-report --inputs rapport-telephone-1.json rapport-pc-bureau.json --output combo.txt
 mon-secret-cookie password-lab --engine john
 mon-secret-cookie flask-lab
 # Ouvrir http://127.0.0.1:5000 puis arrêter avec Ctrl+C.

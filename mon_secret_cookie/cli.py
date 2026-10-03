@@ -24,6 +24,7 @@ def parser():
     c.add_argument('--hashes'); c.add_argument('--wordlist'); c.add_argument('--authorized',action='store_true')
     c=s.add_parser('flask-lab'); c.add_argument('--port',type=int,default=5000)
     c=s.add_parser('report'); c.add_argument('--format',choices=['json','txt'],default='json'); c.add_argument('--output',required=True)
+    c=s.add_parser('multi-report'); c.add_argument('--inputs',nargs='+',required=True,help='Rapports JSON exportés sur vos appareils'); c.add_argument('--output',required=True); c.add_argument('--format',choices=['txt','json'],default='txt')
     return p
 
 def menu():
@@ -70,6 +71,12 @@ def main(argv=None):
             lab.serve(a.port); return 0
         if a.command in ('scan-local','cookies') and a.device_id and a.device_id != core.device_id()['device_id']:
             raise core.AuditError('Cet ID ne correspond pas à cette machine. Lancez device-id localement.')
+        if a.command=='multi-report':
+            result=audit.merge_reports(a.inputs)
+            text=json.dumps(result,ensure_ascii=False,indent=2) if a.format=='json' else audit.format_multi_text(result)
+            core.private_write(a.output,text if text.endswith('\n') else text+'\n')
+            print(json.dumps({'rapport':str(a.output),'fichiers_lus':result['fichiers_lus'],'appareils':len(result['appareils'])},ensure_ascii=False,indent=2))
+            return 0
         if a.command=='bilan':
             label=a.label.strip() if a.label else None
             if label and (len(label)>64 or not all(c.isalnum() or c in ' -_.' for c in label)):

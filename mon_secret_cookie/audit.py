@@ -1,4 +1,5 @@
 """Bilan défensif local en texte : regroupe les vérifications de votre propre machine."""
+import json
 import platform
 import socket
 from pathlib import Path
@@ -78,6 +79,58 @@ def _render_value(value, indent='    '):
     else:
         lines.append(f'{indent}{value}')
     return lines
+
+
+def merge_reports(paths):
+    """Regroupe par device_id des rapports JSON exportés sur plusieurs appareils.
+
+    Chaque fichier est un export `report --format json` ({"audits":[...]}),
+    appartenant à votre utilisateur. Entièrement local : aucune lecture réseau.
+    """
+    from .core import AuditError, owned_text
+    devices = {}
+    read = 0
+    for path in paths:
+        try:
+            data = json.loads(owned_text(path))
+        except (AuditError, ValueError, OSError):
+            continue  # fichier illisible, non possédé ou non JSON : ignoré
+        read += 1
+        for entry in data.get('audits', []):
+            result = entry.get('result')
+            if not isinstance(result, dict):
+                continue
+            device = result.get('device_id', 'inconnu')
+            d = devices.setdefault(device, {'device_id': device, 'audits': 0,
+                                            'cookie_files': [], 'cookie_entries': 0})
+            d['audits'] += 1
+            if entry.get('command') == 'cookies':
+                files = result.get('files') or ([result['file']] if result.get('file') else [])
+                for f in files:
+                    if f not in d['cookie_files']:
+                        d['cookie_files'].append(f)
+                d['cookie_entries'] += len(result.get('cookies') or [])
+    appareils = sorted(devices.values(), key=lambda d: d['device_id'])
+    return {'rapport': 'multi-appareils', 'fichiers_lus': read, 'appareils': appareils}
+
+
+def format_multi_text(result):
+    out = ['MON-SECRET-COOKIE — Rapport multi-appareils', '=' * 44,
+           f"Fichiers lus : {result['fichiers_lus']}", '']
+    if not result['appareils']:
+        out.append('(aucune donnée exploitable)')
+        return '\n'.join(out) + '\n'
+    for d in result['appareils']:
+        titre = f"Appareil {d['device_id']}"
+        out.append(titre)
+        out.append('-' * len(titre))
+        out.append(f"  audits enregistrés : {d['audits']}")
+        out.append(f"  cookies — fichiers trouvés : {len(d['cookie_files'])}")
+        for f in d['cookie_files']:
+            out.append(f"    - {f}")
+        out.append(f"  cookies — entrées analysées : {d['cookie_entries']}")
+        out.append('')
+    return '\n'.join(out).rstrip() + '\n'
 
 
 def format_text(result):
