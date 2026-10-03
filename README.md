@@ -40,8 +40,9 @@ python3 -m venv .venv
 | `devices` | Cache voisin du LAN, consultation passive ; chaque appareil reçoit un `asset_id` d'inventaire stable |
 | `devices --cidr CIDR --authorized` | Découverte active Nmap sans scan de ports sur une portion du LAN directement connecté ; chaque appareil reçoit un `asset_id` stable |
 | `nmap IP [IP ...] --authorized` | Scan TCP des 100 ports courants, maximum 16 IP explicites |
-| `cookies --file FICHIER` | Métadonnées d'un fichier Netscape cookies.txt appartenant à votre utilisateur |
-| `cookies --search DOSSIER` | Recherche de cookies.txt, profondeur 4, maximum 100 résultats |
+| `cookies --file FICHIER` | Métadonnées d'un fichier Netscape cookies.txt appartenant à votre utilisateur ; la sortie inclut le `device_id` de cette machine |
+| `cookies --search DOSSIER` | Recherche de cookies.txt, profondeur 4, maximum 100 résultats ; la sortie inclut le `device_id` de cette machine |
+| `cookies … --device-id ID` | Confirme que vous interrogez bien la machine portant cet ID avant d'analyser |
 | `cookie-guide` | Guide français pas à pas : Flask, Set-Cookie, curl, analyse et suppression |
 | `cookie-lab --output cookies.txt` | Création d'un fichier pédagogique avec cookies fictifs |
 | `password-lab --engine john` | Démonstration MD5 avec John the Ripper |
