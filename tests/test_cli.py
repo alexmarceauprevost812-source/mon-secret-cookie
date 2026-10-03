@@ -168,6 +168,17 @@ class Tests(unittest.TestCase):
             self.assertEqual(main(['ports']),0)
         self.assertIn('listeners',out.getvalue())
 
+    def test_cookies_tagged_with_device_id(self):
+        p=self.base/'cookies.txt'; p.write_text(cookies.DEMO)
+        with contextlib.redirect_stdout(io.StringIO()) as out:
+            self.assertEqual(main(['cookies','--file',str(p)]),0)
+        data=json.loads(out.getvalue())
+        self.assertEqual(data['device_id'],core.device_id()['device_id'])
+        self.assertIn('cookies',data)
+        # Vérification d'ID : un ID erroné refuse la commande.
+        with contextlib.redirect_stderr(io.StringIO()):
+            self.assertEqual(main(['cookies','--file',str(p),'--device-id','MSC-FAUX']),1)
+
     def test_record_cleans_partial_audit_file(self):
         import errno
         def partial_then_fail(path, text):

@@ -18,6 +18,7 @@ def parser():
     n=s.add_parser('nmap'); n.add_argument('targets',nargs='+'); n.add_argument('--authorized',action='store_true')
     c=s.add_parser('cookies'); group=c.add_mutually_exclusive_group(required=True)
     group.add_argument('--file'); group.add_argument('--search')
+    c.add_argument('--device-id',help='ID applicatif attendu de cette machine')
     c=s.add_parser('cookie-lab'); c.add_argument('--output',default='cookies.txt')
     c=s.add_parser('password-lab'); c.add_argument('--engine',choices=['john','hashcat'],default='john')
     c.add_argument('--hashes'); c.add_argument('--wordlist'); c.add_argument('--authorized',action='store_true')
@@ -67,7 +68,7 @@ def main(argv=None):
             if not 1024<=a.port<=65535:
                 raise core.AuditError('Port entre 1024 et 65535 requis.')
             lab.serve(a.port); return 0
-        if a.command=='scan-local' and a.device_id and a.device_id != core.device_id()['device_id']:
+        if a.command in ('scan-local','cookies') and a.device_id and a.device_id != core.device_id()['device_id']:
             raise core.AuditError('Cet ID ne correspond pas à cette machine. Lancez device-id localement.')
         if a.command=='bilan':
             label=a.label.strip() if a.label else None
@@ -80,7 +81,7 @@ def main(argv=None):
         actions={'device-id':network.local_identity,'scan-local':lambda:{**core.device_id(),**network.scan_local()},'ports':network.ports,
                  'wifi-info':network.wifi_info,'wifite':network.wifite_info,'devices':lambda:network.devices(a.cidr,a.authorized),
                  'nmap':lambda:network.authorized_scan(a.targets,a.authorized),
-                 'cookies':lambda:cookies.analyze(a.file) if a.file else cookies.search(a.search),
+                 'cookies':lambda:{**core.device_id(),**(cookies.analyze(a.file) if a.file else cookies.search(a.search))},
                  'cookie-lab':lambda:cookies.demo(a.output),
                  'password-lab':lambda:passwords.password_lab(a.engine,a.hashes,a.wordlist,a.authorized),
                  'report':lambda:core.report(a.output,a.format)}
