@@ -24,6 +24,7 @@ def parser():
     c.add_argument('--hashes'); c.add_argument('--wordlist'); c.add_argument('--authorized',action='store_true')
     c=s.add_parser('flask-lab'); c.add_argument('--port',type=int,default=5000)
     c=s.add_parser('report'); c.add_argument('--format',choices=['json','txt'],default='json'); c.add_argument('--output',required=True)
+    c=s.add_parser('multi-report'); c.add_argument('--inputs',nargs='+',required=True,help='Rapports JSON exportés sur vos appareils'); c.add_argument('--output',required=True); c.add_argument('--format',choices=['txt','json'],default='txt')
     return p
 
 def menu():
@@ -31,9 +32,20 @@ def menu():
              '6':['cookie-lab'],'7':['password-lab'],'8':['flask-lab'],'13':['cookie-guide'],'14':['bilan']}
     while True:
         print(logo())
-        color='\033[40;32m' if sys.stdout.isatty() else ''
-        reset='\033[0m' if color else ''
-        print(color+'TI-LEX — MON-SECRET-COOKIE\n1 Device ID  2 Scan local  3 Ports  4 Wi-Fi\n5 LAN passif  6 Cookie Lab  7 Password Lab  8 Flask Lab\n9 Nmap autorisé  10 Cookies locaux  11 Rapport  12 LAN actif\n13 Guide des cookies  14 Bilan appareil (texte)  0 Quitter'+reset)
+        on=sys.stdout.isatty()
+        green='\033[40;32m' if on else ''          # texte vert sur fond noir
+        sky='\033[40;1;38;5;117m' if on else ''    # numéros en bleu ciel
+        reset='\033[0m' if on else ''
+        def e(n,label):
+            return f'{sky}{n}{green} {label}'
+        lignes=['TI-LEX — MON-SECRET-COOKIE',
+                '— Appareil local —   '+'  '.join([e('1','Device ID'),e('2','Scan local'),e('3','Ports'),e('4','Wi-Fi'),e('14','Bilan (texte)')]),
+                '— Réseau (autorisé) — '+'  '.join([e('5','LAN passif'),e('12','LAN actif'),e('9','Nmap autorisé')]),
+                '— Cookies —           '+'  '.join([e('10','Cookies locaux'),e('6','Cookie Lab'),e('13','Guide des cookies')]),
+                '— Labo —              '+'  '.join([e('7','Password Lab'),e('8','Flask Lab')]),
+                '— Rapports —          '+'  '.join([e('11','Rapport'),e('15','Rapport multi-appareils')]),
+                e('0','Quitter')]
+        print(green+'\n'.join(lignes)+reset)
         selection=input('TI-LEX > ').strip()
         if selection=='0':
             return
@@ -50,6 +62,10 @@ def menu():
         elif selection=='14':
             name=input('Étiquette de cet appareil (vide = aucune) : ').strip()
             args=['bilan',*(['--label',name] if name else [])]
+        elif selection=='15':
+            files=input('Rapports JSON à regrouper (séparés par espaces) : ').strip().split()
+            out=input('Fichier de sortie : ').strip()
+            args=['multi-report','--inputs',*files,'--output',out] if files and out else None
         if args:
             main(args)
 
@@ -70,6 +86,12 @@ def main(argv=None):
             lab.serve(a.port); return 0
         if a.command in ('scan-local','cookies') and a.device_id and a.device_id != core.device_id()['device_id']:
             raise core.AuditError('Cet ID ne correspond pas à cette machine. Lancez device-id localement.')
+        if a.command=='multi-report':
+            result=audit.merge_reports(a.inputs)
+            text=json.dumps(result,ensure_ascii=False,indent=2) if a.format=='json' else audit.format_multi_text(result)
+            core.private_write(a.output,text if text.endswith('\n') else text+'\n')
+            print(json.dumps({'rapport':str(a.output),'fichiers_lus':result['fichiers_lus'],'appareils':len(result['appareils'])},ensure_ascii=False,indent=2))
+            return 0
         if a.command=='bilan':
             label=a.label.strip() if a.label else None
             if label and (len(label)>64 or not all(c.isalnum() or c in ' -_.' for c in label)):

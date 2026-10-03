@@ -1,4 +1,5 @@
 """Bilan défensif local en texte : regroupe les vérifications de votre propre machine."""
+import json
 import platform
 import socket
 from pathlib import Path
@@ -78,6 +79,80 @@ def _render_value(value, indent='    '):
     else:
         lines.append(f'{indent}{value}')
     return lines
+
+
+def _report_device(data):
+    """Déduit l'ID de l'appareil d'un rapport : un fichier provient d'une seule machine.
+
+    Cherche un device_id au niveau d'une entrée (cookies, scan-local) ou niché dans
+    une section du bilan (Identité). Retourne 'inconnu' si vraiment aucun.
+    """
+    for entry in data.get('audits', []):
+        result = entry.get('result')
+        if not isinstance(result, dict):
+            continue
+        if result.get('device_id'):
+            return result['device_id']
+        for section in result.get('sections', []) or []:
+            sdata = section.get('data') if isinstance(section, dict) else None
+            if isinstance(sdata, dict) and sdata.get('device_id'):
+                return sdata['device_id']
+    return 'inconnu'
+
+
+def merge_reports(paths):
+    """Regroupe par appareil des rapports JSON exportés sur plusieurs machines.
+
+    Chaque fichier est un export `report --format json` ({"audits":[...]}),
+    appartenant à votre utilisateur, et provient d'un seul appareil : toutes ses
+    entrées sont donc attribuées à l'ID déduit de ce fichier. Entièrement local.
+    """
+    from .core import AuditError, owned_text
+    devices = {}
+    read = 0
+    for path in paths:
+        try:
+            data = json.loads(owned_text(path))
+        except (AuditError, ValueError, OSError):
+            continue  # fichier illisible, non possédé ou non JSON : ignoré
+        read += 1
+        device = _report_device(data)
+        for entry in data.get('audits', []):
+            result = entry.get('result')
+            if not isinstance(result, dict):
+                continue
+            # Ne créer le seau d'appareil qu'une fois une entrée exploitable rencontrée :
+            # un rapport vide ne doit pas produire d'appareil fantôme.
+            d = devices.setdefault(device, {'device_id': device, 'audits': 0,
+                                            'cookie_files': [], 'cookie_entries': 0})
+            d['audits'] += 1
+            if entry.get('command') == 'cookies':
+                files = result.get('files') or ([result['file']] if result.get('file') else [])
+                for f in files:
+                    if f not in d['cookie_files']:
+                        d['cookie_files'].append(f)
+                d['cookie_entries'] += len(result.get('cookies') or [])
+    appareils = sorted(devices.values(), key=lambda d: d['device_id'])
+    return {'rapport': 'multi-appareils', 'fichiers_lus': read, 'appareils': appareils}
+
+
+def format_multi_text(result):
+    out = ['MON-SECRET-COOKIE — Rapport multi-appareils', '=' * 44,
+           f"Fichiers lus : {result['fichiers_lus']}", '']
+    if not result['appareils']:
+        out.append('(aucune donnée exploitable)')
+        return '\n'.join(out) + '\n'
+    for d in result['appareils']:
+        titre = f"Appareil {d['device_id']}"
+        out.append(titre)
+        out.append('-' * len(titre))
+        out.append(f"  audits enregistrés : {d['audits']}")
+        out.append(f"  cookies — fichiers trouvés : {len(d['cookie_files'])}")
+        for f in d['cookie_files']:
+            out.append(f"    - {f}")
+        out.append(f"  cookies — entrées analysées : {d['cookie_entries']}")
+        out.append('')
+    return '\n'.join(out).rstrip() + '\n'
 
 
 def format_text(result):

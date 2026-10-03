@@ -168,6 +168,41 @@ class Tests(unittest.TestCase):
             self.assertEqual(main(['ports']),0)
         self.assertIn('listeners',out.getvalue())
 
+    def test_multi_report_groups_by_device(self):
+        from mon_secret_cookie import audit
+        r1=self.base/'dev1.json'; r2=self.base/'dev2.json'
+        r1.write_text(json.dumps({'audits':[
+            {'command':'cookies','time':'t','result':{'device_id':'MSC-AAA','files':['/a/cookies.txt']}},
+            {'command':'cookies','time':'t','result':{'device_id':'MSC-AAA','file':'/a/cookies.txt','cookies':[{'name':'x'}]}}]}))
+        r2.write_text(json.dumps({'audits':[
+            {'command':'cookies','time':'t','result':{'device_id':'MSC-BBB','files':['/b/c1.txt','/b/c2.txt']}}]}))
+        out=self.base/'combo.json'
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(main(['multi-report','--inputs',str(r1),str(r2),'--output',str(out),'--format','json']),0)
+        data=json.loads(out.read_text())
+        self.assertEqual(data['fichiers_lus'],2)
+        by={d['device_id']:d for d in data['appareils']}
+        self.assertEqual(by['MSC-AAA']['cookie_entries'],1)
+        self.assertEqual(len(by['MSC-BBB']['cookie_files']),2)
+        # Un fichier illisible est ignoré, pas d'échec.
+        bad=self.base/'bad.json'; bad.write_text('pas du json')
+        self.assertEqual(audit.merge_reports([str(bad)])['fichiers_lus'],0)
+
+    def test_multi_report_attributes_untagged_entries(self):
+        from mon_secret_cookie import audit
+        # Un rapport d'un seul appareil : ports (sans device_id) + bilan (ID niché).
+        r=self.base/'dev.json'
+        r.write_text(json.dumps({'audits':[
+            {'command':'ports','time':'t','result':{'listeners':[]}},
+            {'command':'bilan','time':'t','result':{'sections':[
+                {'titre':'Identité','ok':True,'data':{'device_id':'MSC-NICHE','hostname':'h'}}]}}]}))
+        result=audit.merge_reports([str(r)])
+        self.assertEqual([d['device_id'] for d in result['appareils']],['MSC-NICHE'])
+        self.assertEqual(result['appareils'][0]['audits'],2)  # les 2 entrées, pas d'inconnu
+        # Un rapport sans audit ne crée aucun appareil fantôme.
+        empty=self.base/'empty.json'; empty.write_text(json.dumps({'audits':[]}))
+        self.assertEqual(audit.merge_reports([str(empty)])['appareils'],[])
+
     def test_cookies_tagged_with_device_id(self):
         p=self.base/'cookies.txt'; p.write_text(cookies.DEMO)
         with contextlib.redirect_stdout(io.StringIO()) as out:
