@@ -42,6 +42,25 @@ def _word(text, face, shadow, colored):
     return '\n'.join(rows)
 
 
+def _cookie(colored, radius=3):
+    """Cookie rond avec pépites, généré sur une grille pour un alignement exact."""
+    body = '\033[1;48;5;16;38;5;223m' if colored else ''   # beige
+    chip = '\033[1;48;5;16;38;5;94m' if colored else ''    # chocolat brun
+    blank = '\033[48;5;16m' if colored else ''
+    reset = '\033[0m' if colored else ''
+    chips = {(-1, -1), (1, -1), (0, 1), (2, 1), (-2, 0), (-1, 2)}
+    rows = []
+    for y in range(-radius, radius + 1):
+        cells = []
+        for x in range(-radius, radius + 1):
+            if x * x + y * y <= radius * radius + 1:
+                cells.append((chip + '■') if (x, y) in chips else (body + '█'))
+            else:
+                cells.append(blank + ' ')
+        rows.append(''.join(cells) + reset)
+    return rows
+
+
 def logo():
     if sys.platform == 'win32' and sys.stdout.isatty():
         # Windows Terminal / console VT : activation des couleurs si disponible.
@@ -58,6 +77,14 @@ def logo():
     if width < 54:
         lime = '\033[1;40;38;5;154m' if colored else ''
         orange = '\033[1;40;38;5;208m' if colored else ''
+        beige = '\033[1;40;38;5;223m' if colored else ''
+        brown = '\033[1;40;38;5;94m' if colored else ''
         reset = '\033[0m' if colored else ''
-        return f'{lime}LE SECRET{reset}\n{orange}COOKIE{reset}\n  ▓▓▓▓▓▓'
-    return '\n'.join((_word('LE SECRET', 154, 28, colored), '', _word('COOKIE', 208, 130, colored)))
+        cookie = f'{beige}(█{brown}■{beige}█{brown}■{beige}█){reset}'
+        return f'{lime}LE SECRET{reset}\n{orange}COOKIE{reset} {cookie}\n  ▓▓▓▓▓▓'
+    secret = _word('LE SECRET', 154, 28, colored)
+    word = _word('COOKIE', 208, 130, colored).split('\n')
+    biscuit = _cookie(colored)
+    # Cookie aligné à droite du mot COOKIE (7 lignes de part et d'autre).
+    cookie_line = '\n'.join(f'{w}  {b}' for w, b in zip(word, biscuit))
+    return '\n'.join((secret, '', cookie_line))
