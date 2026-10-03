@@ -1,10 +1,50 @@
 """Inventaire Linux et Nmap sans scripts, capture ni attaque."""
+import hashlib
 import ipaddress
 import json
 import socket
 import xml.etree.ElementTree as ET
 from .core import AuditError, run
 from . import platforms
+
+
+def asset_id(mac=None, ip=None):
+    """Identifiant d'inventaire stable pour un appareil déjà découvert.
+
+    Dérivé de la MAC (sinon de l'IP) uniquement : aucune collecte nouvelle.
+    Sert à reconnaître le même appareil d'un scan autorisé à l'autre.
+    """
+    basis = (mac or ip or '').strip().lower()
+    if not basis:
+        return None
+    return 'DEV-' + hashlib.sha256(basis.encode('utf-8')).hexdigest()[:12].upper()
+
+
+def _first(mapping, keys):
+    for key in keys:
+        value = mapping.get(key)
+        if value:
+            return value
+    return None
+
+
+def _annotate_neighbor(neighbor):
+    mac = _first(neighbor, ('lladdr', 'LinkLayerAddress'))
+    ip = _first(neighbor, ('dst', 'IPAddress'))
+    identifier = asset_id(mac, ip)
+    if identifier:
+        neighbor['asset_id'] = identifier
+    return neighbor
+
+
+def _annotate_host(host):
+    addresses = host.get('addresses', [])
+    mac = next((a.get('addr') for a in addresses if a.get('addrtype') == 'mac'), None)
+    ip = next((a.get('addr') for a in addresses if a.get('addrtype') in ('ipv4', 'ipv6')), None)
+    identifier = asset_id(mac, ip)
+    if identifier:
+        host['asset_id'] = identifier
+    return host
 
 def interfaces():
     if platforms.is_windows():
@@ -116,7 +156,8 @@ def authorized_scan(targets, authorized):
 
 def devices(cidr=None, authorized=False):
     if cidr is None:
-        return {'mode':'cache voisin passif','neighbors':platforms.windows_neighbors() if platforms.is_windows() else json.loads(run(['ip','-j','neigh','show']))}
+        neighbors=platforms.windows_neighbors() if platforms.is_windows() else json.loads(run(['ip','-j','neigh','show']))
+        return {'mode':'cache voisin passif','neighbors':[_annotate_neighbor(n) for n in neighbors]}
     if not authorized:
         raise AuditError("Découverte active : --authorized requis pour votre LAN.")
     net = ipaddress.ip_network(cidr,strict=True)
@@ -131,8 +172,8 @@ def devices(cidr=None, authorized=False):
                 connected.append(ipaddress.ip_network(f"{a['local']}/{a['prefixlen']}",strict=False))
     if not any(net.subnet_of(n) for n in connected):
         raise AuditError("Le périmètre doit appartenir à une interface locale active.")
-    return {'mode':'découverte Nmap sans scan de ports','hosts':parse_nmap(run(
-        ['nmap','-n','-sn','-T3','--max-retries','1','--host-timeout','10s','-oX','-',str(net)],timeout=90))}
+    return {'mode':'découverte Nmap sans scan de ports','hosts':[_annotate_host(h) for h in parse_nmap(run(
+        ['nmap','-n','-sn','-T3','--max-retries','1','--host-timeout','10s','-oX','-',str(net)],timeout=90))]}
 
 
 def wifite_info():

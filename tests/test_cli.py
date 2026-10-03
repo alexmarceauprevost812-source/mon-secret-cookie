@@ -51,6 +51,21 @@ class Tests(unittest.TestCase):
             for cidr in ['192.168.2.0/24','192.168.0.0/16','8.8.8.0/24']:
                 with self.assertRaises(core.AuditError): network.devices(cidr,True)
 
+    def test_asset_id_stable_across_modes(self):
+        mac='AA:BB:CC:DD:EE:FF'
+        self.assertEqual(network.asset_id(mac=mac),network.asset_id(mac=mac.lower()))
+        self.assertIsNone(network.asset_id())
+        host=network._annotate_host({'addresses':[{'addr':'10.0.0.5','addrtype':'ipv4'},{'addr':mac,'addrtype':'mac'}]})
+        linux=network._annotate_neighbor({'dst':'10.0.0.5','lladdr':mac})
+        windows=network._annotate_neighbor({'IPAddress':'10.0.0.5','LinkLayerAddress':mac})
+        self.assertTrue(host['asset_id'].startswith('DEV-'))
+        self.assertEqual(host['asset_id'],linux['asset_id'])
+        self.assertEqual(host['asset_id'],windows['asset_id'])
+
+    def test_devices_active_requires_authorization(self):
+        # L'annotation ne contourne pas le gate : sans --authorized, refus.
+        with self.assertRaises(core.AuditError): network.devices('192.168.1.0/24',False)
+
     def test_wifite_status_no_execution(self):
         with patch('shutil.which',return_value='/usr/bin/wifite'), patch('mon_secret_cookie.network.run') as run:
             self.assertTrue(network.wifite_info()['installed'])
