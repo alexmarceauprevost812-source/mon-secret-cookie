@@ -107,6 +107,8 @@ Le Password Lab utilise des fichiers temporaires privés et un dictionnaire born
 
 Identifiant et résultats dans `~/.local/state/mon-secret-cookie` (répertoire 0700, fichiers 0600). `MSC_STATE_DIR` permet un emplacement différent, utile pour les tests. Les rapports ne contiennent pas de valeurs de cookies ou de mots de passe, mais peuvent contenir IP, SSID/BSSID et noms de cookies : choisissez leur destinataire en conséquence. Aucun envoi externe automatique. Les exports et fichiers de démonstration refusent d'écraser un fichier existant.
 
+Le journal d'audit est accessoire : si son écriture échoue (par exemple disque plein), la commande affiche quand même son résultat et signale l'avertissement sur la sortie d'erreur, au lieu d'échouer. Un disque plein (`ENOSPC`) est indiqué par un message clair rappelant comment libérer de l'espace (`pkg clean` sous Termux, `sudo apt clean` sous Linux).
+
 ## Développement et tests
 
 Modules : `platforms` (Windows et Termux), `branding` (logo), `core` (état, exécution, rapports), `network`, `cookies`, `passwords`, `lab` (Flask), `cli` (arguments et menu).

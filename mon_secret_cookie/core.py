@@ -1,9 +1,11 @@
 """Stockage privé, exécution bornée et fichiers appartenant à l'utilisateur."""
+import errno
 import json
 import os
 import shutil
 import stat
 import subprocess
+import sys
 import uuid
 from pathlib import Path
 from datetime import datetime, timezone
@@ -11,6 +13,15 @@ from . import platforms
 
 class AuditError(Exception):
     pass
+
+
+def disk_full_hint(error):
+    """Message clair en français si l'erreur est un disque plein, sinon None."""
+    if isinstance(error, OSError) and error.errno == errno.ENOSPC:
+        return ("Disque plein : libérez de l'espace puis réessayez "
+                "(Termux : pkg clean ; Linux : sudo apt clean ; "
+                "ou supprimez des fichiers inutiles).")
+    return None
 
 def run(argv, timeout=30):
     if not shutil.which(argv[0]):
@@ -73,11 +84,32 @@ def device_id():
 
 def record(command, result):
     data = {"command":command,"time":datetime.now(timezone.utc).isoformat(),"result":result}
-    private_write(state_dir()/(uuid.uuid4().hex+'.json'), json.dumps(data, ensure_ascii=False, indent=2))
+    path = None
+    try:
+        path = state_dir()/(uuid.uuid4().hex+'.json')
+        private_write(path, json.dumps(data, ensure_ascii=False, indent=2))
+    except OSError as error:
+        # Une écriture interrompue (par exemple disque plein pendant f.write) peut laisser
+        # un fichier d'audit partiel qui ferait échouer report() ensuite : on le supprime.
+        if path is not None:
+            try:
+                path.unlink()
+            except OSError:
+                pass
+        # Le journal d'audit est accessoire : ne pas faire échouer une commande de lecture
+        # seulement parce que l'écriture du journal a échoué.
+        hint = disk_full_hint(error) or f"journal d'audit non enregistré ({error})"
+        print(f"Avertissement : {hint}", file=sys.stderr)
     return result
 
 def report(output, fmt):
-    entries = [json.loads(owned_text(p)) for p in sorted(state_dir().glob('*.json'))]
+    entries = []
+    for p in sorted(state_dir().glob('*.json')):
+        try:
+            entries.append(json.loads(owned_text(p)))
+        except (AuditError, ValueError):
+            # Ignorer un fichier d'audit illisible ou partiel plutôt que de tout bloquer.
+            continue
     text = json.dumps({"audits":entries},ensure_ascii=False,indent=2)
     if fmt == 'txt':
         text = "MON-SECRET-COOKIE — Rapport défensif\n\n" + "\n\n".join(

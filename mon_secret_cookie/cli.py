@@ -90,7 +90,7 @@ def main(argv=None):
         print(json.dumps(result,ensure_ascii=False,indent=2))
         return 0
     except (core.AuditError,OSError,ValueError,ImportError) as e:
-        print(f'Erreur : {e}',file=sys.stderr); return 1
+        print(f'Erreur : {core.disk_full_hint(e) or e}',file=sys.stderr); return 1
     except (KeyboardInterrupt,EOFError):
         print('Opération interrompue.',file=sys.stderr); return 130
 
