@@ -168,6 +168,23 @@ class Tests(unittest.TestCase):
             self.assertEqual(main(['ports']),0)
         self.assertIn('listeners',out.getvalue())
 
+    def test_record_cleans_partial_audit_file(self):
+        import errno
+        def partial_then_fail(path, text):
+            Path(path).write_text('')
+            raise OSError(errno.ENOSPC,'No space left on device')
+        with patch('mon_secret_cookie.core.private_write',side_effect=partial_then_fail), \
+             contextlib.redirect_stderr(io.StringIO()):
+            core.record('ports',{'listeners':[]})
+        self.assertEqual(list((self.base/'state').glob('*.json')),[])
+
+    def test_report_skips_corrupt_audit_file(self):
+        sd=core.state_dir()
+        core.private_write(sd/'aaa.json',json.dumps({'command':'ports','time':'t','result':{}}))
+        (sd/'bbb.json').write_text('')
+        out=self.base/'r.txt'
+        self.assertEqual(core.report(out,'txt')['audits'],1)
+
     def test_flask_cookie_and_host(self):
         app=create_app();app.testing=True
         c=app.test_client()
