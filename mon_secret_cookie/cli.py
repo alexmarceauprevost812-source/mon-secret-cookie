@@ -13,6 +13,7 @@ def parser():
         s.add_parser(name)
     c=s.add_parser('scan-local'); c.add_argument('--device-id',help='ID applicatif attendu de cette machine')
     c=s.add_parser('bilan'); c.add_argument('--format',choices=['txt','json'],default='txt'); c.add_argument('--no-neighbors',action='store_true',help='Ne pas lire le cache de voisinage LAN')
+    c.add_argument('--label',help="Étiquette libre pour distinguer vos appareils (ex. telephone-1, pc-bureau)")
     d=s.add_parser('devices'); d.add_argument('--cidr'); d.add_argument('--authorized',action='store_true')
     n=s.add_parser('nmap'); n.add_argument('targets',nargs='+'); n.add_argument('--authorized',action='store_true')
     c=s.add_parser('cookies'); group=c.add_mutually_exclusive_group(required=True)
@@ -45,6 +46,9 @@ def menu():
             args=['cookies','--file',input('Votre fichier cookies.txt : ').strip()]
         elif selection=='11':
             args=['report','--output',input('Nouveau fichier rapport JSON : ').strip()]
+        elif selection=='14':
+            name=input('Étiquette de cet appareil (vide = aucune) : ').strip()
+            args=['bilan',*(['--label',name] if name else [])]
         if args:
             main(args)
 
@@ -66,7 +70,10 @@ def main(argv=None):
         if a.command=='scan-local' and a.device_id and a.device_id != core.device_id()['device_id']:
             raise core.AuditError('Cet ID ne correspond pas à cette machine. Lancez device-id localement.')
         if a.command=='bilan':
-            result=audit.collect(include_neighbors=not a.no_neighbors)
+            label=a.label.strip() if a.label else None
+            if label and (len(label)>64 or not all(c.isalnum() or c in ' -_.' for c in label)):
+                raise core.AuditError('Étiquette : 64 caractères maximum, lettres, chiffres, espace, - _ . uniquement.')
+            result=audit.collect(include_neighbors=not a.no_neighbors,label=label)
             core.record('bilan',result)
             print(json.dumps(result,ensure_ascii=False,indent=2) if a.format=='json' else audit.format_text(result))
             return 0

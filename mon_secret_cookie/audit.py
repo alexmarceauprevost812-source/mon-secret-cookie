@@ -35,8 +35,11 @@ def _section(title, fn):
         return {'titre': title, 'ok': False, 'erreur': str(error)}
 
 
-def collect(include_neighbors=True):
-    """Rassemble les informations de votre propre appareil et, en lecture passive, de votre LAN."""
+def collect(include_neighbors=True, label=None):
+    """Rassemble les informations de votre propre appareil et, en lecture passive, de votre LAN.
+
+    label : étiquette libre choisie par vous pour distinguer vos appareils (ex. telephone-1, pc-bureau).
+    """
     sections = [
         _section('Identité', lambda: {**device_id(), 'hostname': socket.gethostname()}),
         _section('Système (cette machine)', system_identity),
@@ -48,7 +51,10 @@ def collect(include_neighbors=True):
     if include_neighbors:
         # Lecture passive du cache de voisinage : aucun paquet de scan émis.
         sections.append(_section('Voisins LAN (cache passif, sans scan)', lambda: network.devices()))
-    return {'bilan': 'appareil local', 'sections': sections}
+    result = {'bilan': 'appareil local', 'sections': sections}
+    if label:
+        result['etiquette'] = label
+    return result
 
 
 def _render_value(value, indent='    '):
@@ -75,7 +81,10 @@ def _render_value(value, indent='    '):
 
 
 def format_text(result):
-    out = ['MON-SECRET-COOKIE — Bilan défensif de votre appareil', '=' * 52, '']
+    out = ['MON-SECRET-COOKIE — Bilan défensif de votre appareil', '=' * 52]
+    if result.get('etiquette'):
+        out.append(f'Appareil : {result["etiquette"]}')
+    out.append('')
     for section in result['sections']:
         out.append(section['titre'])
         out.append('-' * len(section['titre']))

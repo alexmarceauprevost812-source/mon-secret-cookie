@@ -34,6 +34,7 @@ python3 -m venv .venv
 | `bilan` | Rapport texte tout-en-un de votre propre appareil : identité applicative, système réel (nom d'hôte, noyau, architecture, machine-id), interfaces, ports en écoute, Wi-Fi, scan local et voisins LAN (cache passif) |
 | `bilan --format json` | Même bilan en JSON |
 | `bilan --no-neighbors` | Bilan sans lecture du cache de voisinage LAN |
+| `bilan --label NOM` | Étiquette libre pour distinguer vos appareils (ex. `telephone-1`, `pc-bureau`) |
 | `wifite` | Vérifie la présence de Wifite et affiche les instructions manuelles |
 | `wifi-info` | Interface, SSID/BSSID, fréquence, signal et débit disponibles via iw |
 | `devices` | Cache voisin du LAN, consultation passive |
@@ -57,6 +58,9 @@ Sans argument, le menu s'ouvre dans un terminal interactif ; sinon l'aide s'affi
 ```bash
 mon-secret-cookie device-id
 mon-secret-cookie bilan            # rapport texte tout-en-un de votre appareil
+# Lancer le même bilan sur chacun de vos appareils en les étiquetant :
+mon-secret-cookie bilan --label telephone-1
+mon-secret-cookie bilan --label pc-bureau
 mon-secret-cookie ports
 mon-secret-cookie scan-local
 # Pour vérifier explicitement que vous testez la machine portant cet ID :

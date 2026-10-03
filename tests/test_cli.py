@@ -111,6 +111,21 @@ class Tests(unittest.TestCase):
         self.assertIn('device_id',text)
         self.assertIn('Indisponible',text)
 
+    def test_bilan_label(self):
+        from mon_secret_cookie import audit
+        failing=audit.AuditError('indisponible')
+        patches=[patch(f'mon_secret_cookie.network.{name}',side_effect=failing)
+                 for name in ('local_addresses','ports','wifi_info','scan_local','devices')]
+        with contextlib.ExitStack() as stack:
+            for p in patches: stack.enter_context(p)
+            stack.enter_context(contextlib.redirect_stdout(io.StringIO()))
+            out=io.StringIO()
+            with contextlib.redirect_stdout(out):
+                self.assertEqual(main(['bilan','--label','pc-bureau']),0)
+            self.assertIn('Appareil : pc-bureau',out.getvalue())
+            with contextlib.redirect_stderr(io.StringIO()):
+                self.assertEqual(main(['bilan','--label','bad/;name']),1)
+
     def test_bilan_no_neighbors(self):
         from mon_secret_cookie import audit
         titles=[s['titre'] for s in audit.collect(include_neighbors=False)['sections']]
