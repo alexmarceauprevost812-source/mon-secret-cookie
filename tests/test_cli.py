@@ -199,6 +199,9 @@ class Tests(unittest.TestCase):
         result=audit.merge_reports([str(r)])
         self.assertEqual([d['device_id'] for d in result['appareils']],['MSC-NICHE'])
         self.assertEqual(result['appareils'][0]['audits'],2)  # les 2 entrées, pas d'inconnu
+        # Un rapport sans audit ne crée aucun appareil fantôme.
+        empty=self.base/'empty.json'; empty.write_text(json.dumps({'audits':[]}))
+        self.assertEqual(audit.merge_reports([str(empty)])['appareils'],[])
 
     def test_cookies_tagged_with_device_id(self):
         p=self.base/'cookies.txt'; p.write_text(cookies.DEMO)

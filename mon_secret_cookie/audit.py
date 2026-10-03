@@ -117,12 +117,14 @@ def merge_reports(paths):
             continue  # fichier illisible, non possédé ou non JSON : ignoré
         read += 1
         device = _report_device(data)
-        d = devices.setdefault(device, {'device_id': device, 'audits': 0,
-                                        'cookie_files': [], 'cookie_entries': 0})
         for entry in data.get('audits', []):
             result = entry.get('result')
             if not isinstance(result, dict):
                 continue
+            # Ne créer le seau d'appareil qu'une fois une entrée exploitable rencontrée :
+            # un rapport vide ne doit pas produire d'appareil fantôme.
+            d = devices.setdefault(device, {'device_id': device, 'audits': 0,
+                                            'cookie_files': [], 'cookie_entries': 0})
             d['audits'] += 1
             if entry.get('command') == 'cookies':
                 files = result.get('files') or ([result['file']] if result.get('file') else [])
