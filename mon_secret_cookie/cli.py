@@ -2,7 +2,7 @@
 import argparse
 import json
 import sys
-from . import core, network, cookies, passwords, lab
+from . import core, network, cookies, passwords, lab, audit
 from .branding import logo
 
 def parser():
@@ -12,6 +12,7 @@ def parser():
     for name in ('device-id','ports','wifi-info','wifite','cookie-guide','menu'):
         s.add_parser(name)
     c=s.add_parser('scan-local'); c.add_argument('--device-id',help='ID applicatif attendu de cette machine')
+    c=s.add_parser('bilan'); c.add_argument('--format',choices=['txt','json'],default='txt'); c.add_argument('--no-neighbors',action='store_true',help='Ne pas lire le cache de voisinage LAN')
     d=s.add_parser('devices'); d.add_argument('--cidr'); d.add_argument('--authorized',action='store_true')
     n=s.add_parser('nmap'); n.add_argument('targets',nargs='+'); n.add_argument('--authorized',action='store_true')
     c=s.add_parser('cookies'); group=c.add_mutually_exclusive_group(required=True)
@@ -25,12 +26,12 @@ def parser():
 
 def menu():
     choices={'1':['device-id'],'2':['scan-local'],'3':['ports'],'4':['wifi-info'],'5':['devices'],
-             '6':['cookie-lab'],'7':['password-lab'],'8':['flask-lab'],'13':['cookie-guide']}
+             '6':['cookie-lab'],'7':['password-lab'],'8':['flask-lab'],'13':['cookie-guide'],'14':['bilan']}
     while True:
         print(logo())
         color='\033[40;32m' if sys.stdout.isatty() else ''
         reset='\033[0m' if color else ''
-        print(color+'TI-LEX — MON-SECRET-COOKIE\n1 Device ID  2 Scan local  3 Ports  4 Wi-Fi\n5 LAN passif  6 Cookie Lab  7 Password Lab  8 Flask Lab\n9 Nmap autorisé  10 Cookies locaux  11 Rapport  12 LAN actif\n13 Guide des cookies  0 Quitter'+reset)
+        print(color+'TI-LEX — MON-SECRET-COOKIE\n1 Device ID  2 Scan local  3 Ports  4 Wi-Fi\n5 LAN passif  6 Cookie Lab  7 Password Lab  8 Flask Lab\n9 Nmap autorisé  10 Cookies locaux  11 Rapport  12 LAN actif\n13 Guide des cookies  14 Bilan appareil (texte)  0 Quitter'+reset)
         selection=input('TI-LEX > ').strip()
         if selection=='0':
             return
@@ -64,6 +65,11 @@ def main(argv=None):
             lab.serve(a.port); return 0
         if a.command=='scan-local' and a.device_id and a.device_id != core.device_id()['device_id']:
             raise core.AuditError('Cet ID ne correspond pas à cette machine. Lancez device-id localement.')
+        if a.command=='bilan':
+            result=audit.collect(include_neighbors=not a.no_neighbors)
+            core.record('bilan',result)
+            print(json.dumps(result,ensure_ascii=False,indent=2) if a.format=='json' else audit.format_text(result))
+            return 0
         actions={'device-id':network.local_identity,'scan-local':lambda:{**core.device_id(),**network.scan_local()},'ports':network.ports,
                  'wifi-info':network.wifi_info,'wifite':network.wifite_info,'devices':lambda:network.devices(a.cidr,a.authorized),
                  'nmap':lambda:network.authorized_scan(a.targets,a.authorized),

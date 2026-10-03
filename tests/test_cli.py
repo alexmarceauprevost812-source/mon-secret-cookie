@@ -96,6 +96,27 @@ class Tests(unittest.TestCase):
             self.assertEqual(main(['scan-local','--device-id',device]),0)
             self.assertEqual(json.loads(output.getvalue())['device_id'],device)
 
+    def test_bilan_text_best_effort(self):
+        from mon_secret_cookie import audit
+        failing=audit.AuditError('indisponible')
+        with patch('mon_secret_cookie.network.local_addresses',side_effect=failing), \
+             patch('mon_secret_cookie.network.ports',side_effect=failing), \
+             patch('mon_secret_cookie.network.wifi_info',side_effect=failing), \
+             patch('mon_secret_cookie.network.scan_local',side_effect=failing), \
+             patch('mon_secret_cookie.network.devices',side_effect=failing), \
+             contextlib.redirect_stdout(io.StringIO()) as output:
+            self.assertEqual(main(['bilan']),0)
+        text=output.getvalue()
+        self.assertIn('Bilan défensif',text)
+        self.assertIn('device_id',text)
+        self.assertIn('Indisponible',text)
+
+    def test_bilan_no_neighbors(self):
+        from mon_secret_cookie import audit
+        titles=[s['titre'] for s in audit.collect(include_neighbors=False)['sections']]
+        self.assertFalse(any('Voisins' in t for t in titles))
+        self.assertTrue(any('Voisins' in s['titre'] for s in audit.collect()['sections']))
+
     def test_flask_cookie_and_host(self):
         app=create_app();app.testing=True
         c=app.test_client()
