@@ -188,6 +188,18 @@ class Tests(unittest.TestCase):
         bad=self.base/'bad.json'; bad.write_text('pas du json')
         self.assertEqual(audit.merge_reports([str(bad)])['fichiers_lus'],0)
 
+    def test_multi_report_attributes_untagged_entries(self):
+        from mon_secret_cookie import audit
+        # Un rapport d'un seul appareil : ports (sans device_id) + bilan (ID niché).
+        r=self.base/'dev.json'
+        r.write_text(json.dumps({'audits':[
+            {'command':'ports','time':'t','result':{'listeners':[]}},
+            {'command':'bilan','time':'t','result':{'sections':[
+                {'titre':'Identité','ok':True,'data':{'device_id':'MSC-NICHE','hostname':'h'}}]}}]}))
+        result=audit.merge_reports([str(r)])
+        self.assertEqual([d['device_id'] for d in result['appareils']],['MSC-NICHE'])
+        self.assertEqual(result['appareils'][0]['audits'],2)  # les 2 entrées, pas d'inconnu
+
     def test_cookies_tagged_with_device_id(self):
         p=self.base/'cookies.txt'; p.write_text(cookies.DEMO)
         with contextlib.redirect_stdout(io.StringIO()) as out:

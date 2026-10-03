@@ -81,11 +81,31 @@ def _render_value(value, indent='    '):
     return lines
 
 
+def _report_device(data):
+    """Déduit l'ID de l'appareil d'un rapport : un fichier provient d'une seule machine.
+
+    Cherche un device_id au niveau d'une entrée (cookies, scan-local) ou niché dans
+    une section du bilan (Identité). Retourne 'inconnu' si vraiment aucun.
+    """
+    for entry in data.get('audits', []):
+        result = entry.get('result')
+        if not isinstance(result, dict):
+            continue
+        if result.get('device_id'):
+            return result['device_id']
+        for section in result.get('sections', []) or []:
+            sdata = section.get('data') if isinstance(section, dict) else None
+            if isinstance(sdata, dict) and sdata.get('device_id'):
+                return sdata['device_id']
+    return 'inconnu'
+
+
 def merge_reports(paths):
-    """Regroupe par device_id des rapports JSON exportés sur plusieurs appareils.
+    """Regroupe par appareil des rapports JSON exportés sur plusieurs machines.
 
     Chaque fichier est un export `report --format json` ({"audits":[...]}),
-    appartenant à votre utilisateur. Entièrement local : aucune lecture réseau.
+    appartenant à votre utilisateur, et provient d'un seul appareil : toutes ses
+    entrées sont donc attribuées à l'ID déduit de ce fichier. Entièrement local.
     """
     from .core import AuditError, owned_text
     devices = {}
@@ -96,13 +116,13 @@ def merge_reports(paths):
         except (AuditError, ValueError, OSError):
             continue  # fichier illisible, non possédé ou non JSON : ignoré
         read += 1
+        device = _report_device(data)
+        d = devices.setdefault(device, {'device_id': device, 'audits': 0,
+                                        'cookie_files': [], 'cookie_entries': 0})
         for entry in data.get('audits', []):
             result = entry.get('result')
             if not isinstance(result, dict):
                 continue
-            device = result.get('device_id', 'inconnu')
-            d = devices.setdefault(device, {'device_id': device, 'audits': 0,
-                                            'cookie_files': [], 'cookie_entries': 0})
             d['audits'] += 1
             if entry.get('command') == 'cookies':
                 files = result.get('files') or ([result['file']] if result.get('file') else [])
