@@ -51,6 +51,21 @@ class Tests(unittest.TestCase):
             for cidr in ['192.168.2.0/24','192.168.0.0/16','8.8.8.0/24']:
                 with self.assertRaises(core.AuditError): network.devices(cidr,True)
 
+    def test_asset_id_stable_across_modes(self):
+        mac='AA:BB:CC:DD:EE:FF'
+        self.assertEqual(network.asset_id(mac=mac),network.asset_id(mac=mac.lower()))
+        self.assertIsNone(network.asset_id())
+        host=network._annotate_host({'addresses':[{'addr':'10.0.0.5','addrtype':'ipv4'},{'addr':mac,'addrtype':'mac'}]})
+        linux=network._annotate_neighbor({'dst':'10.0.0.5','lladdr':mac})
+        windows=network._annotate_neighbor({'IPAddress':'10.0.0.5','LinkLayerAddress':mac})
+        self.assertTrue(host['asset_id'].startswith('DEV-'))
+        self.assertEqual(host['asset_id'],linux['asset_id'])
+        self.assertEqual(host['asset_id'],windows['asset_id'])
+
+    def test_devices_active_requires_authorization(self):
+        # L'annotation ne contourne pas le gate : sans --authorized, refus.
+        with self.assertRaises(core.AuditError): network.devices('192.168.1.0/24',False)
+
     def test_wifite_status_no_execution(self):
         with patch('shutil.which',return_value='/usr/bin/wifite'), patch('mon_secret_cookie.network.run') as run:
             self.assertTrue(network.wifite_info()['installed'])
@@ -95,6 +110,42 @@ class Tests(unittest.TestCase):
         with patch('mon_secret_cookie.network.scan_local',return_value={'hosts':[]}), contextlib.redirect_stdout(io.StringIO()) as output:
             self.assertEqual(main(['scan-local','--device-id',device]),0)
             self.assertEqual(json.loads(output.getvalue())['device_id'],device)
+
+    def test_bilan_text_best_effort(self):
+        from mon_secret_cookie import audit
+        failing=audit.AuditError('indisponible')
+        with patch('mon_secret_cookie.network.local_addresses',side_effect=failing), \
+             patch('mon_secret_cookie.network.ports',side_effect=failing), \
+             patch('mon_secret_cookie.network.wifi_info',side_effect=failing), \
+             patch('mon_secret_cookie.network.scan_local',side_effect=failing), \
+             patch('mon_secret_cookie.network.devices',side_effect=failing), \
+             contextlib.redirect_stdout(io.StringIO()) as output:
+            self.assertEqual(main(['bilan']),0)
+        text=output.getvalue()
+        self.assertIn('Bilan défensif',text)
+        self.assertIn('device_id',text)
+        self.assertIn('Indisponible',text)
+
+    def test_bilan_label(self):
+        from mon_secret_cookie import audit
+        failing=audit.AuditError('indisponible')
+        patches=[patch(f'mon_secret_cookie.network.{name}',side_effect=failing)
+                 for name in ('local_addresses','ports','wifi_info','scan_local','devices')]
+        with contextlib.ExitStack() as stack:
+            for p in patches: stack.enter_context(p)
+            stack.enter_context(contextlib.redirect_stdout(io.StringIO()))
+            out=io.StringIO()
+            with contextlib.redirect_stdout(out):
+                self.assertEqual(main(['bilan','--label','pc-bureau']),0)
+            self.assertIn('Appareil : pc-bureau',out.getvalue())
+            with contextlib.redirect_stderr(io.StringIO()):
+                self.assertEqual(main(['bilan','--label','bad/;name']),1)
+
+    def test_bilan_no_neighbors(self):
+        from mon_secret_cookie import audit
+        titles=[s['titre'] for s in audit.collect(include_neighbors=False)['sections']]
+        self.assertFalse(any('Voisins' in t for t in titles))
+        self.assertTrue(any('Voisins' in s['titre'] for s in audit.collect()['sections']))
 
     def test_flask_cookie_and_host(self):
         app=create_app();app.testing=True

@@ -28,13 +28,17 @@ python3 -m venv .venv
 
 | Commande | Fonction |
 | --- | --- |
-| `device-id` | Identifiant aléatoire applicatif, persistant et indépendant du matériel |
+| `device-id` | Identifiant aléatoire applicatif, persistant et indépendant du matériel (l'identité système réelle apparaît dans `bilan`) |
 | `scan-local` | Scan TCP des 20 ports courants de localhost et des IP propres à la machine |
 | `ports` | Sockets TCP/UDP en écoute via ss ; ports, protocole et nom /etc/services |
+| `bilan` | Rapport texte tout-en-un de votre propre appareil : identité applicative, système réel (nom d'hôte, noyau, architecture, machine-id), interfaces, ports en écoute, Wi-Fi, scan local et voisins LAN (cache passif) |
+| `bilan --format json` | Même bilan en JSON |
+| `bilan --no-neighbors` | Bilan sans lecture du cache de voisinage LAN |
+| `bilan --label NOM` | Étiquette libre pour distinguer vos appareils (ex. `telephone-1`, `pc-bureau`) |
 | `wifite` | Vérifie la présence de Wifite et affiche les instructions manuelles |
 | `wifi-info` | Interface, SSID/BSSID, fréquence, signal et débit disponibles via iw |
-| `devices` | Cache voisin du LAN, consultation passive |
-| `devices --cidr CIDR --authorized` | Découverte active Nmap sans scan de ports sur une portion du LAN directement connecté |
+| `devices` | Cache voisin du LAN, consultation passive ; chaque appareil reçoit un `asset_id` d'inventaire stable |
+| `devices --cidr CIDR --authorized` | Découverte active Nmap sans scan de ports sur une portion du LAN directement connecté ; chaque appareil reçoit un `asset_id` stable |
 | `nmap IP [IP ...] --authorized` | Scan TCP des 100 ports courants, maximum 16 IP explicites |
 | `cookies --file FICHIER` | Métadonnées d'un fichier Netscape cookies.txt appartenant à votre utilisateur |
 | `cookies --search DOSSIER` | Recherche de cookies.txt, profondeur 4, maximum 100 résultats |
@@ -53,6 +57,10 @@ Sans argument, le menu s'ouvre dans un terminal interactif ; sinon l'aide s'affi
 
 ```bash
 mon-secret-cookie device-id
+mon-secret-cookie bilan            # rapport texte tout-en-un de votre appareil
+# Lancer le même bilan sur chacun de vos appareils en les étiquetant :
+mon-secret-cookie bilan --label telephone-1
+mon-secret-cookie bilan --label pc-bureau
 mon-secret-cookie ports
 mon-secret-cookie scan-local
 # Pour vérifier explicitement que vous testez la machine portant cet ID :
@@ -86,6 +94,8 @@ Le fichier contient uniquement 1 à 100 hashes MD5 bruts, un hash hexadécimal d
 Utilisez uniquement vos appareils ou un périmètre explicitement autorisé. `--authorized` est une déclaration de votre autorisation, pas une preuve technique de propriété. Un scan envoie des paquets et peut être journalisé ; aucun scan ne garantit un impact nul.
 
 La découverte active accepte seulement un réseau IPv4 privé de 256 adresses maximum, inclus dans une interface locale active. `nmap` accepte uniquement des adresses IP littérales, sans nom DNS, CIDR, scripts NSE, exploitation, détection intrusive de versions ni arguments libres. Le scan est TCP connect, avec temporisations et délais bornés. L'inventaire passif peut être incomplet ; les appareils filtrant les sondes peuvent rester invisibles. Les adresses locales IPv6 link-local sont exclues du scan local.
+
+Chaque appareil découvert reçoit un `asset_id` d'inventaire (`DEV-…`), dérivé par hachage de sa MAC, sinon de son IP, à partir des seules données déjà renvoyées : aucune collecte supplémentaire. Il sert à reconnaître le même appareil d'un relevé à l'autre et n'est produit que dans le cache passif et la découverte autorisée. Il ne contourne pas l'autorisation : la découverte active exige toujours `--authorized` et un périmètre appartenant à une interface locale. Cet outil est destiné à vos propres réseaux ou à un périmètre explicitement autorisé ; chaque personne qui s'en sert déclare sa propre autorisation.
 
 Les cookies sont lus uniquement depuis des fichiers locaux explicitement indiqués. Aucun profil navigateur, trafic réseau, appareil tiers, session, mot de passe ou clé Wi-Fi n'est extrait. Les valeurs des cookies ne sont jamais affichées ni enregistrées dans les rapports ; Secure, HttpOnly, expiration et métadonnées sont analysés. SameSite n'est pas représenté par le format Netscape. La recherche ne suit pas les liens symboliques ; un fichier final symbolique est refusé.
 
