@@ -119,7 +119,11 @@ def state_location():
 def read_table(table):
     # Liste fermée : aucun identifiant SQL fourni par l'utilisateur.
     queries = {'targets': 'SELECT data FROM targets ORDER BY id',
-               'missions': 'SELECT data FROM missions ORDER BY started'}
+               'missions': 'SELECT data FROM missions ORDER BY started',
+               'plans': 'SELECT data FROM brain_plans ORDER BY id',
+               'budget': "SELECT data FROM programmer_budget WHERE id='programmer'",
+               'plan_events': 'SELECT event FROM brain_events ORDER BY id',
+               'programmer_events': 'SELECT event FROM programmer_events ORDER BY id'}
     query = queries[table]
     directory = state_location()
     path = directory/'security.sqlite3'
@@ -131,6 +135,11 @@ def read_table(table):
         raise core.AuditError('Registre privé de cet utilisateur requis.')
     conn = sqlite3.connect(path.as_uri() + '?mode=ro', uri=True, timeout=10)
     try:
+        optional = {'plans': 'brain_plans', 'budget': 'programmer_budget',
+                    'plan_events': 'brain_events', 'programmer_events': 'programmer_events'}
+        if table in optional:
+            if not conn.execute('SELECT name FROM sqlite_master WHERE name=?', (optional[table],)).fetchone():
+                return []
         return [json.loads(row[0]) for row in conn.execute(query)]
     finally:
         conn.close()
@@ -225,9 +234,38 @@ def existing_launcher(name):
 def parser():
     root = argparse.ArgumentParser(prog='prevost', description='Adaptateur local : préparation par défaut')
     sub = root.add_subparsers(dest='command', required=True)
+    programmer_parser = sub.add_parser('programmeur', help='Contrôles AUTO V5, lots de 250 et validation opérateur')
+    programmer_sub = programmer_parser.add_subparsers(dest='programmer_action', required=True)
+    programmer_sub.add_parser('rapport')
+    programmer_sub.add_parser('renouveler')
+    item = programmer_sub.add_parser('tester')
+    item.add_argument('project')
+    item.add_argument('--executer', action='store_true')
+    brain_parser = sub.add_parser('cerveau', help='Planification IA et reprise contrôlée')
+    brain_sub = brain_parser.add_subparsers(dest='brain_action', required=True)
+    brain_sub.add_parser('etat')
+    brain_sub.add_parser('plans')
+    journal = brain_sub.add_parser('journal')
+    journal.add_argument('plan_id')
+    create = brain_sub.add_parser('planifier')
+    create.add_argument('objective')
+    create.add_argument('--cible', action='append')
+    create.add_argument('--backend', choices=['local', 'codex'], default='local')
+    create.add_argument('--modele')
+    create.add_argument('--projet', help='Projet explicitement choisi pour les contrôles AUTO V5')
+    create.add_argument('--cookies-dossier', help='Dossier local choisi par l’opérateur ; jamais fourni par le modèle')
+    create.add_argument('--endpoint', choices=['http://127.0.0.1:11435', 'http://127.0.0.1:11434'], default='http://127.0.0.1:11435')
+    create.add_argument('--autoriser-codex', action='store_true')
+    for name in ('reprendre', 'surveiller'):
+        item = brain_sub.add_parser(name)
+        item.add_argument('plan_id')
+        item.add_argument('--executer', action='store_true')
+        if name == 'surveiller':
+            item.add_argument('--cycles', type=int)
     sub.add_parser('aide', help='Afficher toutes les commandes')
     sub.add_parser('cibles', help='Consulter les autorisations enregistrées')
-    sub.add_parser('nouvelles', help='Consulter les nouveaux actifs des inventaires')
+    new = sub.add_parser('nouvelles', help='Consulter les nouveaux actifs des inventaires')
+    new.add_argument('--cookies-dossier', help='Dossier local explicitement sélectionné ; métadonnées uniquement')
     sub.add_parser('kali', help='Ouvrir le lanceur Kali existant')
     sub.add_parser('ia', help='Ouvrir le système IA existant')
     system = sub.add_parser('diagnostic', help='Diagnostics fixes de versions et stockage')
@@ -243,6 +281,7 @@ def parser():
             choice = item.add_mutually_exclusive_group()
             choice.add_argument('--cible', action='append')
             choice.add_argument('--id', help='Consulter une mission RUN-…')
+            choice.add_argument('--plan-id', help='Reprendre un plan IA PLN-…')
             item.add_argument('--executer', action='store_true')
         else:
             item.add_argument('--cible', action='append', required=True)
@@ -265,6 +304,34 @@ def main(argv=None):
         return 0
     args = root.parse_args(argv)
     try:
+        if args.command == 'programmeur':
+            from . import programmer
+            if args.programmer_action == 'rapport':
+                result = programmer.report()
+            elif args.programmer_action == 'renouveler':
+                result = programmer.renew()
+            else:
+                result = programmer.project_tests(args.project, args.executer)
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+            return 0
+        if args.command == 'cerveau':
+            from . import brain, ai_planner
+            if args.brain_action == 'etat':
+                result = {'codex': executable('codex'), 'local_servers': ai_planner.local_models(),
+                          'plans': brain.plans(), 'deployed': False}
+            elif args.brain_action == 'plans':
+                result = brain.plans()
+            elif args.brain_action == 'journal':
+                result = brain.history(args.plan_id)
+            elif args.brain_action == 'planifier':
+                result = brain.create(args.objective, args.cible, args.backend, args.modele,
+                                      args.endpoint, args.autoriser_codex, args.projet, args.cookies_dossier)
+            elif args.brain_action == 'reprendre':
+                result = brain.resume(args.plan_id, args.executer)
+            else:
+                result = brain.watch(args.plan_id, args.executer, args.cycles)
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+            return 0
         if args.command == 'aide':
             root.print_help()
             return 0
@@ -275,6 +342,9 @@ def main(argv=None):
             result = targets_view()
         elif args.command == 'nouvelles':
             result = security.new_assets(read_table('missions'))
+            if args.cookies_dossier:
+                from .cookie_inventory import collect
+                result['local_cookie_files'] = collect(args.cookies_dossier)
         elif args.command == 'diagnostic':
             result = registry(True, args.kali)
         elif args.command == 'outils':
@@ -282,6 +352,11 @@ def main(argv=None):
         elif args.command == 'tableau':
             result = dashboard(args.diagnostic)
         elif args.command == 'mission':
+            if args.plan_id:
+                from . import brain
+                result = brain.resume(args.plan_id, args.executer)
+                print(json.dumps(result, ensure_ascii=False, indent=2))
+                return 0
             if args.executer and not args.cible:
                 raise core.AuditError('--executer nécessite une sélection explicite --cible AUTH-…')
             result = scan(args.cible, args.executer) if args.cible else report(mission=args.id)
