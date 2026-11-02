@@ -93,6 +93,7 @@ def dashboard(diagnostic=False):
                            'authorizations': len(targets), 'missions': len(missions),
                            'last_mission': {k: missions[-1].get(k) for k in ('id', 'status', 'started')} if missions else None,
                            'integration': 'Mon Secret Cookie via le Python existant',
+                           'launcher_installed': (Path.home()/'.local/bin/prevost').is_file(),
                            'deployed': False}
     return result
 
@@ -199,9 +200,38 @@ def ssh_plan(destination, port=8765):
                              'API locale authentifiée ; token transféré par un canal sûr.']}
 
 
+def targets_view():
+    result = []
+    for target in read_table('targets'):
+        entry = {**target, 'valid': True}
+        try:
+            security.validate(target)
+        except core.AuditError as error:
+            entry.update(valid=False, reason=str(error))
+        result.append(entry)
+    return {'cibles': result}
+
+
+def existing_launcher(name):
+    # Liste fermée, sans argument libre ni évaluation shell.
+    paths = {'kali': Path.home()/'.local/bin/kali',
+             'ia': Path.home()/'.local/bin/prevost-ia'}
+    path = paths[name]
+    if not path.is_file() or not os.access(path, os.X_OK):
+        raise core.AuditError('Lanceur existant absent ou non exécutable : '+str(path))
+    os.execv(str(path), [str(path)])
+
+
 def parser():
     root = argparse.ArgumentParser(prog='prevost', description='Adaptateur local : préparation par défaut')
     sub = root.add_subparsers(dest='command', required=True)
+    sub.add_parser('aide', help='Afficher toutes les commandes')
+    sub.add_parser('cibles', help='Consulter les autorisations enregistrées')
+    sub.add_parser('nouvelles', help='Consulter les nouveaux actifs des inventaires')
+    sub.add_parser('kali', help='Ouvrir le lanceur Kali existant')
+    sub.add_parser('ia', help='Ouvrir le système IA existant')
+    system = sub.add_parser('diagnostic', help='Diagnostics fixes de versions et stockage')
+    system.add_argument('--kali', action='store_true')
     tools = sub.add_parser('outils')
     tools.add_argument('--diagnostic', action='store_true')
     tools.add_argument('--kali', action='store_true')
@@ -209,7 +239,13 @@ def parser():
     panel.add_argument('--diagnostic', action='store_true')
     for name in ('mission', 'scan'):
         item = sub.add_parser(name)
-        item.add_argument('--cible', action='append', required=True)
+        if name == 'mission':
+            choice = item.add_mutually_exclusive_group()
+            choice.add_argument('--cible', action='append')
+            choice.add_argument('--id', help='Consulter une mission RUN-…')
+            item.add_argument('--executer', action='store_true')
+        else:
+            item.add_argument('--cible', action='append', required=True)
         if name == 'scan':
             item.add_argument('--executer', action='store_true')
     item = sub.add_parser('rapport')
@@ -222,14 +258,33 @@ def parser():
 
 
 def main(argv=None):
-    args = parser().parse_args(argv)
+    argv = sys.argv[1:] if argv is None else argv
+    root = parser()
+    if not argv:
+        root.print_help()
+        return 0
+    args = root.parse_args(argv)
     try:
-        if args.command == 'outils':
+        if args.command == 'aide':
+            root.print_help()
+            return 0
+        if args.command in ('kali', 'ia'):
+            existing_launcher(args.command)
+            return 0
+        if args.command == 'cibles':
+            result = targets_view()
+        elif args.command == 'nouvelles':
+            result = security.new_assets(read_table('missions'))
+        elif args.command == 'diagnostic':
+            result = registry(True, args.kali)
+        elif args.command == 'outils':
             result = registry(args.diagnostic, args.kali)
         elif args.command == 'tableau':
             result = dashboard(args.diagnostic)
         elif args.command == 'mission':
-            result = prepare(args.cible)
+            if args.executer and not args.cible:
+                raise core.AuditError('--executer nécessite une sélection explicite --cible AUTH-…')
+            result = scan(args.cible, args.executer) if args.cible else report(mission=args.id)
         elif args.command == 'scan':
             result = scan(args.cible, args.executer)
         elif args.command == 'rapport':

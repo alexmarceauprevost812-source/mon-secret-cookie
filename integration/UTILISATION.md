@@ -9,14 +9,59 @@ bash integration/prevost stockage
 bash integration/prevost rapport
 ```
 
-Pour employer le nom court dans le terminal courant, une fonction suffit :
+## Commande Python installée — V3.2 FINAL
+
+Le nouveau lanceur Python est installé dans `~/.local/bin/prevost` seulement si
+ce nom est libre. Il utilise le venv existant du projet, indépendamment du dossier
+courant et du Python disponible dans le PATH d'une session SSH. Aucun autre
+lanceur, profil shell, serveur SSH ou pare-feu n'est modifié.
+
+```bash
+python3 -B integration/install_launcher.py --preview
+python3 -B integration/install_launcher.py
+prevost aide
+```
+
+L'installateur refuse tout fichier existant, y compris un lien symbolique. Avec
+`--preview`, il montre les différences si un lanceur existe déjà. Il ne possède
+aucun mode de remplacement forcé. Une nouvelle installation utilise une création
+exclusive et le mode 0700, pour l'utilisateur LexOS concerné.
+
+| Commande | Fonction |
+| --- | --- |
+| `prevost aide` | Aide, également affichée sans argument |
+| `prevost outils` | Inventaire des outils LexOS/Kali |
+| `prevost mission` | Historique des missions |
+| `prevost mission --id RUN-…` | Résultats d'une mission précise |
+| `prevost mission --cible AUTH-…` | Préparer une mission sans sonde |
+| `prevost mission --cible AUTH-… --executer` | Exécuter avec les mêmes contrôles que scan |
+| `prevost cibles` | Consulter les autorisations et leur validité |
+| `prevost scan --cible AUTH-… --executer` | Exécuter uniquement les tests permis |
+| `prevost nouvelles` | Changements des inventaires via le moteur existant |
+| `prevost rapport [--output FICHIER]` | Lire ou exporter les résultats |
+| `prevost diagnostic [--kali]` | Versions des outils, espace et état détectable |
+| `prevost kali` | Ouvrir uniquement `~/.local/bin/kali` |
+| `prevost ia` | Ouvrir uniquement `~/.local/bin/prevost-ia` |
+
+Les commandes `kali` et `ia` sont interactives et n'acceptent aucun argument libre
+ou commande shell. Elles conservent les capacités et confirmations des systèmes
+existants. `cibles` ne crée pas d'autorisation ; `mission` ne supprime aucun historique.
+
+Dans la session SSH Termus connectée au même compte LexOS, utiliser les mêmes
+commandes. Le calcul reste sur LexOS ; aucun serveur ni Python Android
+supplémentaire n'est nécessaire. Les profils existants ajoutent déjà
+`~/.local/bin` au PATH. Si une ancienne session ne l'a pas encore, l'appel absolu
+`$HOME/.local/bin/prevost aide` fonctionne sans modifier son profil.
+
+Avant cette installation, une fonction de session pouvait aussi être utilisée :
 
 ```bash
 prevost() { bash "$HOME/LexOS-Projets/mon-secret-cookie/integration/prevost" "$@"; }
 prevost outils
 ```
 
-Cette fonction n'est pas ajoutée automatiquement au profil shell. Le registre
+Cette fonction historique n'est pas nécessaire après installation. Elle n'est
+pas ajoutée automatiquement au profil shell. Le registre
 décrit les exécutables existants et indique Mon Secret Cookie 0.3.0 dans le Python
 courant. Il cherche Lynis dans `/usr/sbin` et Codex dans ses installations locales
 si nécessaire. Un outil trouvé n'est pas considéré comme fonctionnel avant diagnostic.
