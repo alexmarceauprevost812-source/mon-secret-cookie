@@ -2,6 +2,117 @@
 
 Outil CLI Python pour **Linux (Kali Linux et Ubuntu), Termux (Android) et Windows**, audit défensif et laboratoire autorisé. Interface interactive TI-LEX noir/vert, avec logo en relief « LE SECRET » vert lime et « COOKIE » orange. Le logo se simplifie dans les petits terminaux ; `NO_COLOR=1` désactive ses couleurs. Python 3.10 minimum.
 
+## Security Pro 2.1 — intégration IA locale
+
+Le moteur de mission ajoute un registre d'autorisations, une comparaison des
+inventaires et une API locale authentifiée. Le plan est dans [ARCHITECTURE.md](ARCHITECTURE.md).
+Les commandes existantes restent disponibles. Aucun modèle GGUF n'est lu,
+déplacé ou modifié ; aucune connexion à un fournisseur d'IA n'est nécessaire.
+
+### Enregistrer un périmètre approuvé
+
+Exemple à adapter à votre autorisation réelle ; enregistrer une cible constitue
+une décision explicite de l'opérateur, pas une vérification de propriété :
+
+```bash
+mon-secret-cookie cibles ajouter --name laboratoire --owner responsable \
+  --scope 192.168.1.0/24 --tests inventory tcp \
+  --expires 2027-01-01T00:00:00Z \
+  --proof 'Accord écrit du responsable, référence LAB-001' \
+  --reference laboratoire.example
+mon-secret-cookie cibles
+mon-secret-cookie autorisations
+mon-secret-cookie scan complet
+mon-secret-cookie nouvelles
+mon-secret-cookie rapport --output mission.json
+```
+
+`inventory` autorise la découverte Nmap ; `tcp` ajoute un scan TCP connect des
+100 ports courants. Un CIDR doit rester dans une interface LAN active, être IPv4
+privé et contenir au maximum 256 adresses. Une IP unique peut être enregistrée
+explicitement ; les domaines et identifiants connus servent de références sans
+résolution DNS automatique. Pour sélectionner une autorisation précise, utiliser
+`scan complet --cible AUTH-…` (option répétable). Sans sélection, toutes les
+autorisations enregistrées doivent être valides : une autorisation expirée ou
+révoquée bloque le lancement global.
+
+Chaque nouvel actif découvert **dans le périmètre approuvé** hérite des tests et
+de l'échéance de son autorisation. Un identifiant seul n'autorise rien hors de ce
+périmètre. Les actifs extérieurs renvoyés dans un résultat restent en attente,
+sans scan TCP supplémentaire. Pour révoquer une autorisation :
+`mon-secret-cookie cibles revoquer AUTH-…`. Pour la renouveler, créer une nouvelle
+autorisation ; l'ancienne preuve et l'historique restent conservés.
+
+Les missions conservent leurs preuves, dates, résultats, diagnostics des outils et
+différences avec la dernière mission réussie du même ID d'autorisation : nouveaux
+actifs, IP et services modifiés, actifs non observés. Une absence peut être liée au
+filtrage des sondes. Sans MAC disponible, l'identifiant repose sur l'IP : un changement
+d'IP peut apparaître comme un ajout et une absence. `nouvelles` montre les ajouts du
+dernier inventaire réussi par autorisation et les observations historiques en attente.
+Les missions échouées ne remplacent pas l'inventaire de référence. Une coupure forcée
+peut laisser une mission marquée `running` : elle ne compte pas comme référence.
+
+« Complet » désigne le parcours de mission, pas une garantie de couverture réseau :
+pas de scan UDP, de tous les 65535 ports, de scripts NSE ou d'exploitation. Les
+opérations intrusives ne sont pas implémentées dans ce moteur. Une approbation
+distincte serait nécessaire avant leur ajout. Les commandes historiques `nmap`
+et `devices --authorized` conservent leur fonctionnement autonome et ne constituent
+pas une mission suivie par le registre.
+
+### État des outils
+
+```bash
+mon-secret-cookie outils
+```
+
+Diagnostics bornés : version Nmap, aide/version Wifite, version et backends
+Hashcat (`-I`), nom et pilote des GPU NVIDIA via `nvidia-smi`, capacités Wi-Fi
+déclarées par `iw list` sous Linux. L'absence d'un outil ou d'un GPU est signalée.
+La présence du mode monitor dans les capacités ne prouve ni l'injection ni la
+compatibilité complète : aucune attaque radio n'est exécutée. Le moteur de mission
+ne lance pas de récupération de mots de passe. Les démonstrations Hashcat existantes
+doivent utiliser uniquement des données fictives non sensibles.
+
+### Serveur local et client IA
+
+```bash
+# Bash : secret éphémère, créé sans affichage ni écriture dans le dépôt.
+export MSC_API_TOKEN="$(python3 -c 'import secrets; print(secrets.token_urlsafe(48))')"
+mon-secret-cookie serveur --port 8765
+```
+
+L'API écoute uniquement sur `127.0.0.1`, refuse un token absent ou trop court
+(32 caractères minimum) et exige `Authorization: Bearer <token>` pour chaque
+requête. Routes GET : `/api/health`, `/api/cibles`, `/api/autorisations`,
+`/api/nouvelles`, `/api/rapports`, `/api/outils`. Cette dernière retourne les
+diagnostics enregistrés avec la dernière mission, sans lancer de commande.
+Les réponses ne sont pas mises en cache. Aucune route ne crée d'autorisation ou
+ne déclenche de scan. Le client IA peut aussi utiliser directement les commandes
+CLI JSON, avec une liste fixe d'arguments ; ne pas lui donner un shell arbitraire
+pour interpréter du texte issu des appareils détectés.
+
+Sur LexOS Pro, démarrer le serveur dans la session de l'utilisateur chargé des
+audits. Depuis Termus/Termux, utiliser une clé SSH et vérifier la clé d'hôte :
+
+```bash
+ssh -N -o StrictHostKeyChecking=yes -o ExitOnForwardFailure=yes \
+  -L 127.0.0.1:8765:127.0.0.1:8765 utilisateur@serveur-lexos
+```
+
+La clé d'hôte doit déjà être vérifiée et enregistrée dans `known_hosts`.
+Configurer le token dans le client par un canal sûr. Aucun service, règle de
+pare-feu, accès SSH ou exposition Internet n'est activé automatiquement. Le
+serveur Flask fourni convient à l'accès local ; ce n'est pas un déploiement web
+public. Pour arrêter, utiliser Ctrl+C puis `unset MSC_API_TOKEN`.
+
+Le registre et les missions sont dans `security.sqlite3`, sous le répertoire
+d'état privé existant. La preuve peut être une référence au document conservé
+localement ; ne pas y mettre de secret. Les rapports de mission utilisent `rapport`,
+les rapports historiques utilisent `report`. Aucun résultat d'audit n'est envoyé
+au dépôt GitHub. Les nouvelles fonctions sont testées avec des réponses réseau
+simulées ; le Wi-Fi/GPU Kali et les appareils Windows/Android restent à valider
+sur matériel réel.
+
 ## Installation
 
 ```bash
@@ -185,3 +296,4 @@ Les adaptateurs Windows et les restrictions Termux sont couverts par des tests s
 ## Guide des cookies
 
 Consultez le [guide pas à pas](mon_secret_cookie/GUIDE_COOKIES.md), ou lancez `mon-secret-cookie cookie-guide` (option 13 du menu). Il explique comment créer un cookie fictif sur `127.0.0.1:8000`, voir `Set-Cookie`, l’enregistrer avec curl, le renvoyer, l’analyser et l’effacer. Les commandes sont adaptées à Linux, Termux et PowerShell Windows.
+

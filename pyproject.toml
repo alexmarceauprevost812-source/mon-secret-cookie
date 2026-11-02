@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mon-secret-cookie"
-version = "0.2.0"
-description = "CLI Linux pour audit défensif local et laboratoires autorisés"
+version = "0.3.0"
+description = "Suite d'audit défensif pour IA locale et laboratoires autorisés"
 requires-python = ">=3.10"
 dependencies = ["Flask>=3.1,<4"]
 
@@ -17,3 +17,4 @@ include = ["mon_secret_cookie*"]
 
 [tool.setuptools.package-data]
 mon_secret_cookie = ["GUIDE_COOKIES.md"]
+

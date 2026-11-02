@@ -102,6 +102,15 @@ def parse_nmap(text):
         root = ET.fromstring(text)
     except ET.ParseError as e:
         raise AuditError('Réponse XML Nmap invalide.') from e
+    if root.tag != 'nmaprun':
+        raise AuditError('Réponse XML sans racine Nmap.')
+    finished = root.find('runstats/finished')
+    if finished is not None and finished.get('exit', 'success') != 'success':
+        raise AuditError('Nmap signale une exécution incomplète.')
+    if any(h.get('timedout') == 'true' for h in root.findall('host')):
+        raise AuditError('Nmap signale un hôte interrompu par le délai maximal.')
+    if any(p.find('state') is None for p in root.findall('host/ports/port')):
+        raise AuditError('État de port absent de la réponse Nmap.')
     return [{'addresses':[a.attrib for a in h.findall('address')],
              'status':h.find('status').get('state') if h.find('status') is not None else 'unknown',
              'ports':[{'port':p.get('portid'),'protocol':p.get('protocol'),
@@ -184,3 +193,4 @@ def wifite_info():
             'manual_help':'wifite --help',
             'scope':'Votre Wi-Fi ou laboratoire explicitement autorisé uniquement.',
             'automation':'Aucune attaque ou capture lancée par mon-secret-cookie.'}
+
