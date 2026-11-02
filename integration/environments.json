@@ -1,0 +1,11 @@
+{
+  "reported": {
+    "kali-lexos": {
+      "source": "Confirmation opérateur, mission V3.2",
+      "release": "Kali Linux 2026.3",
+      "tools": {
+        "wifite": {"path": "/usr/sbin/wifite", "version": "2.8.2-2"}
+      }
+    }
+  }
+}
