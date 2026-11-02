@@ -270,10 +270,10 @@ def reports():
         return {'missions': [json.loads(r['data']) for r in conn.execute('SELECT data FROM missions ORDER BY started')]}
 
 
-def new_assets():
+def new_assets(missions=None):
     latest = {}
     pending = []
-    for mission in reports()['missions']:
+    for mission in reports()['missions'] if missions is None else missions:
         pending.extend(mission['pending'])
         if mission['status'] == 'completed':
             for inventory in mission['inventories']:
