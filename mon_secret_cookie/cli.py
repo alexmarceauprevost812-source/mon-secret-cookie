@@ -2,7 +2,7 @@
 import argparse
 import json
 import sys
-from . import core, network, cookies, passwords, lab, audit, security, diagnostics, server
+from . import core, network, cookies, passwords, lab, audit, security, diagnostics, server, cookie_organizer, ai_planner
 import sqlite3
 from .branding import logo
 
@@ -20,6 +20,12 @@ def parser():
     c=s.add_parser('cookies'); group=c.add_mutually_exclusive_group(required=True)
     group.add_argument('--file'); group.add_argument('--search')
     c.add_argument('--device-id',help='ID applicatif attendu de cette machine')
+    c=s.add_parser('cookies-ranger',help='Ranger/automatiser les fichiers cookies.txt (IA locale optionnelle)')
+    c.add_argument('--dossier',required=True,help='Dossier choisi par vous ; jamais par le modèle')
+    c.add_argument('--ia',action='store_true',help='Demander la catégorie au modèle local (repli sur la règle locale)')
+    c.add_argument('--modele',help='Nom du modèle Ollama local (ex. llama3.1:8b)')
+    c.add_argument('--endpoint',choices=list(ai_planner.ENDPOINTS),default=ai_planner.ENDPOINTS[0])
+    c.add_argument('--executer',action='store_true',help='Déplacer pour vrai (sinon : aperçu seulement)')
     c=s.add_parser('cookie-lab'); c.add_argument('--output',default='cookies.txt')
     c=s.add_parser('password-lab'); c.add_argument('--engine',choices=['john','hashcat'],default='john')
     c.add_argument('--hashes'); c.add_argument('--wordlist'); c.add_argument('--authorized',action='store_true')
@@ -57,7 +63,7 @@ def menu():
         lignes=['TI-LEX — MON-SECRET-COOKIE',
                 '— Appareil local —   '+'  '.join([e('1','Device ID'),e('2','Scan local'),e('3','Ports'),e('4','Wi-Fi'),e('14','Bilan (texte)')]),
                 '— Réseau (autorisé) — '+'  '.join([e('5','LAN passif'),e('12','LAN actif'),e('9','Nmap autorisé')]),
-                '— Cookies —           '+'  '.join([e('10','Cookies locaux'),e('6','Cookie Lab'),e('13','Guide des cookies')]),
+                '— Cookies —           '+'  '.join([e('10','Cookies locaux'),e('6','Cookie Lab'),e('13','Guide des cookies'),e('22','Ranger cookies (IA)')]),
                 '— Labo —              '+'  '.join([e('7','Password Lab'),e('8','Flask Lab')]),
                 '— Rapports —          '+'  '.join([e('11','Rapport'),e('15','Rapport multi-appareils')]),
                 '— IA locale / Security Pro — '+'  '.join([e('16','Outils'),e('17','Cibles'),e('18','Nouvelles'),e('19','Autorisations'),e('20','Mission autorisée'),e('21','Rapport missions')]),
@@ -86,6 +92,14 @@ def menu():
         elif selection=='21':
             out=input('Nouveau fichier rapport des missions JSON : ').strip()
             args=['rapport','--output',out] if out else None
+        elif selection=='22':
+            d=input('Dossier de cookies à ranger (choisi par vous) : ').strip()
+            if not d:
+                continue
+            m=input('Modèle IA local (vide = règle locale, sans IA) : ').strip()
+            base=['cookies-ranger','--dossier',d]+(['--ia','--modele',m] if m else [])
+            main(base)   # aperçu : rien n'est déplacé
+            args=base+['--executer'] if input('Déplacer pour vrai ? Tapez OUI : ')=='OUI' else None
         if args:
             main(args)
 
@@ -120,6 +134,11 @@ def main(argv=None):
                 result=security.export_report(a.output,a.format)
             else:
                 result={'nouvelles':security.new_assets,'autorisations':security.authorizations,'outils':diagnostics.tools}[a.command]()
+            print(json.dumps(result,ensure_ascii=False,indent=2))
+            return 0
+        if a.command=='cookies-ranger':
+            result=cookie_organizer.organize(a.dossier,execute=a.executer,use_ai=a.ia,model=a.modele,endpoint=a.endpoint)
+            core.record('cookies-ranger',result)
             print(json.dumps(result,ensure_ascii=False,indent=2))
             return 0
         if a.command in ('scan-local','cookies') and a.device_id and a.device_id != core.device_id()['device_id']:

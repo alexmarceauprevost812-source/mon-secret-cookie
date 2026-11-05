@@ -73,6 +73,32 @@ compatibilité complète : aucune attaque radio n'est exécutée. Le moteur de m
 ne lance pas de récupération de mots de passe. Les démonstrations Hashcat existantes
 doivent utiliser uniquement des données fictives non sensibles.
 
+### Rangement automatisé des cookies (IA locale)
+
+```bash
+# Aperçu : rien n'est déplacé. Le dossier est choisi par vous.
+mon-secret-cookie cookies-ranger --dossier ./mon-laboratoire
+# Avec un modèle Ollama local (repli automatique sur la règle locale si absent) :
+mon-secret-cookie cookies-ranger --dossier ./mon-laboratoire --ia --modele llama3.1:8b
+# Déplacer pour vrai, une fois l'aperçu validé :
+mon-secret-cookie cookies-ranger --dossier ./mon-laboratoire --executer
+```
+
+Cette section « outils cookies » automatise le classement de vos fichiers
+`cookies.txt`. Elle réutilise la recherche bornée (profondeur 4, 100 fichiers
+maximum, aucun lien symbolique suivi) et l'analyse masquée existantes. Chaque
+fichier reçoit une catégorie dans une **liste fermée** — `actifs`, `expires`,
+`session`, `vides` — puis est déplacé dans `DOSSIER/ranger-cookies/<catégorie>/`.
+
+Le modèle local, s'il est demandé et disponible, choisit seulement la catégorie
+dans cette liste ; il ne reçoit que des **comptes et le domaine dominant**, jamais
+une valeur de cookie, et ne choisit aucun chemin. Sa réponse est validée contre la
+liste ; toute catégorie hors liste est rejetée et la règle locale reprend la main.
+Le dossier de travail est **toujours choisi par l'opérateur**, jamais par le modèle.
+Les déplacements restent dans le dossier choisi, ne suivent aucun lien symbolique,
+n'écrasent aucun fichier existant (un suffixe `-2`, `-3`… est ajouté) et ne touchent
+pas aux fichiers d'un autre utilisateur. Sans `--executer`, c'est un simple aperçu.
+
 ### Serveur local et client IA
 
 ```bash
@@ -154,6 +180,9 @@ python3 -m venv .venv
 | `cookies --file FICHIER` | Métadonnées d'un fichier Netscape cookies.txt appartenant à votre utilisateur ; la sortie inclut le `device_id` de cette machine |
 | `cookies --search DOSSIER` | Recherche de cookies.txt, profondeur 4, maximum 100 résultats ; la sortie inclut le `device_id` de cette machine |
 | `cookies … --device-id ID` | Confirme que vous interrogez bien la machine portant cet ID avant d'analyser |
+| `cookies-ranger --dossier D` | Aperçu : l'IA locale (ou la règle locale) propose un rangement des `cookies.txt` du dossier `D` |
+| `cookies-ranger --dossier D --executer` | Déplace les `cookies.txt` dans `D/ranger-cookies/<catégorie>/` après votre décision |
+| `cookies-ranger … --ia --modele NOM` | Demande la catégorie à un modèle Ollama local ; repli automatique sur la règle locale |
 | `cookie-guide` | Guide français pas à pas : Flask, Set-Cookie, curl, analyse et suppression |
 | `cookie-lab --output cookies.txt` | Création d'un fichier pédagogique avec cookies fictifs |
 | `password-lab --engine john` | Démonstration MD5 avec John the Ripper |
