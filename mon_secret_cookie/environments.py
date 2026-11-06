@@ -4,7 +4,7 @@ import re
 import shlex
 from pathlib import Path
 
-TOOLS = ('wifite', 'nmap', 'tshark', 'lynis', 'hashcat')
+TOOLS = ('wifite', 'nmap', 'tshark', 'lynis', 'hashcat', 'john', 'dumpcap', 'wireshark', 'tcpdump', 'aircrack-ng', 'airodump-ng', 'iw', 'ip', 'ss', 'nikto', 'sqlmap', 'gobuster', 'ffuf', 'whatweb', 'curl', 'openssl', 'dig', 'whois', 'exiftool', 'strings', 'file', 'binwalk', 'radare2')
 # Programme fixe : aucune commande ni option issue d'un modèle ou de la configuration.
 KALI_METADATA = r'''
 import json, os, shutil, subprocess
@@ -14,7 +14,7 @@ for line in Path('/etc/os-release').read_text().splitlines():
     if '=' in line:
         k, v = line.split('=', 1); release[k] = v.strip('"')
 tools = {}
-for name in ('wifite', 'nmap', 'tshark', 'lynis', 'hashcat'):
+for name in ('wifite', 'nmap', 'tshark', 'lynis', 'hashcat', 'john', 'dumpcap', 'wireshark', 'tcpdump', 'aircrack-ng', 'airodump-ng', 'iw', 'ip', 'ss', 'nikto', 'sqlmap', 'gobuster', 'ffuf', 'whatweb', 'curl', 'openssl', 'dig', 'whois', 'exiftool', 'strings', 'file', 'binwalk', 'radare2'):
     path = shutil.which(name)
     if not path and os.access('/usr/sbin/'+name, os.X_OK): path = '/usr/sbin/'+name
     item = {'path': path, 'installed': bool(path), 'version': None}
@@ -63,7 +63,12 @@ def discover(resolve, run, home=None, diagnostic=False):
         return {**result, 'reason': 'Podman absent.'}
     active = run([podman, 'ps', '--format', '{{.Names}}'])
     if active.get('status') != 'ok':
-        return {**result, 'reason': active.get('error') or active.get('output', 'Podman inaccessible.')}
+        from .host_access import classify_error
+        reason=active.get('error') or active.get('output', 'Podman inaccessible.')
+        return {**result, 'reason': reason, 'failure_kind':classify_error(reason),
+                'host_validation_required':True,
+                'host_command':'podman ps --all --format "{{.Names}} {{.Status}}"',
+                'note':'Restriction observée ici ; état du conteneur non déterminé. Aucun changement du stockage.'}
     if found['container'] not in active.get('output', '').splitlines():
         return {**result, 'status': 'stopped', 'reason': 'Conteneur non actif ; aucun démarrage automatique.'}
     prefix = [podman, 'exec', '--env', 'PYTHONDONTWRITEBYTECODE=1', found['container']]
@@ -89,11 +94,15 @@ def discover(resolve, run, home=None, diagnostic=False):
             entry = {'environment': found['container'], 'path': path,
                      'installed': bool(path), 'version': item.get('version'),
                      'version_source': 'dpkg-query', 'status': 'found' if path else 'missing'}
+            if name=='lynis':
+                entry['ownership_safe']=item.get('ownership_safe') is True
             if diagnostic and path:
                 if name == 'lynis' and item.get('ownership_safe') is not True:
                     entry['diagnostic'] = {'status': 'unavailable', 'error': 'Propriété Lynis non validée ; aucun contrôle contourné.'}
                 else:
-                    entry['diagnostic'] = run([*prefix, path, '--help' if name == 'wifite' else '--version'])
+                    from .menu_tools import CHECKS
+                    args = ['--version'] if name in ('nmap','tshark','hashcat','lynis') else CHECKS.get(name, ['--help'])
+                    entry['diagnostic'] = run([*prefix, path, *args])
             tools[name] = entry
         return {**result, 'status': 'available', 'release': data['release'], 'tools': tools}
     except (ValueError, KeyError, TypeError) as error:

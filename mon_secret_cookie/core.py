@@ -23,11 +23,29 @@ def disk_full_hint(error):
                 "ou supprimez des fichiers inutiles).")
     return None
 
+def executable(name):
+    found = shutil.which(name)
+    if found:
+        return found
+    if Path(name).name == name:
+        for folder in ('/usr/sbin', '/usr/local/sbin'):
+            path = Path(folder)/name
+            if path.is_file() and os.access(path, os.X_OK):
+                return str(path)
+    if name == 'codex':
+        root = Path.home()/'.codex/packages/app-server-daemon/releases'
+        for path in sorted(root.glob('*/bin/codex'), reverse=True):
+            if path.is_file() and os.access(path, os.X_OK):
+                return str(path)
+    return None
+
+
 def run(argv, timeout=30):
-    if not shutil.which(argv[0]):
+    path = executable(argv[0])
+    if not path:
         raise AuditError(f"Dépendance absente : {argv[0]}. Consultez l’installateur de votre plateforme dans le README.")
     try:
-        p = subprocess.run(argv, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=timeout)
+        p = subprocess.run([path, *argv[1:]], capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=timeout)
     except subprocess.TimeoutExpired as e:
         raise AuditError("Délai dépassé ; opération arrêtée.") from e
     if p.returncode:
@@ -83,7 +101,7 @@ def device_id():
     return {"device_id": value}
 
 def record(command, result):
-    data = {"command":command,"time":datetime.now(timezone.utc).isoformat(),"result":result}
+    data = {"command":command,"time":datetime.now(timezone.utc).isoformat(),"result":__import__(__package__+".private_reports", fromlist=["metadata"]).metadata(result)}
     path = None
     try:
         path = state_dir()/(uuid.uuid4().hex+'.json')

@@ -1,0 +1,194 @@
+{
+  "/home/ti-lex-al/.local/state/mon-secret-cookie/device-id": {
+    "sha256": "cb5d33a833c21763e848ee2d765315355fc390c8a4df7df867f0def4edb909b7",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/state/mon-secret-cookie/security.sqlite3": {
+    "sha256": "c1dbdae25a63befcc64a0ed08dc6de5d1d01a151234e1308a35ec8e0b2acd02f",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/state/mon-secret-cookie/3e138d75864443bb8531a344476535f9.json": {
+    "sha256": "5902ad9f202f8f4ff66787c28e234edee2d124aac1d0fd07e19e0618fb8a06dd",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/state/mon-secret-cookie/brain.lock": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/state/mon-secret-cookie/91d81532f1d8488dbb016c9c96e2981e.json": {
+    "sha256": "8ca4872664e7bf15d3287f568f075400d36e16291585dd6a6077896f5baba063",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/state/mon-secret-cookie/83beaa9232a846bcb4e6d4190caeab49.json": {
+    "sha256": "b03cc85f4d9c18a313a2966bb49b5e844df28e50285920076cc82136866c6dfb",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie.txt": {
+    "sha256": "09733d76550c0ad4e817fcb87b50d5f483b670eaeb13b56e9af6056f3212b16e",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T010216.236173Z-02bc030e3b474518914e1401d62e72f2.txt": {
+    "sha256": "4f9db481b5302a973e6d0dc9b6faacdacb151d4307e37dbeb8d43fed7586e2f2",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T131611.161304Z-f0a46127670a48ba99b9c02fb64ae0e2.json": {
+    "sha256": "debeb40685434828c57f4d131dfc2f271e7d34323b455e3facd4e7b32662ca83",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T010322.796328Z-fef386dd6efd4dfe81caae93381ba00a.json": {
+    "sha256": "905ef2c8f59a2c675c0a7e42bb752ce8247e63b212e6ac56430ffaf2aaacbea2",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T010322.818326Z-2054c21af0ea4dbebe57e19504be3a8d.txt": {
+    "sha256": "63fbfdfbb7f61d93abe02646defe35c630457cfebd2b46f777470b67a0f93301",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T010216.380431Z-68aa348c73284c8487bcd36c67bd2653.json": {
+    "sha256": "791ef66e9b1858321e5a39111df62b6e12ed214eac51ff7506c1681294170d9d",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T010216.179914Z-cdf622d3b13d46518cca899cee2e9423.txt": {
+    "sha256": "14d09332d6c350f6559f32e30fac2ec2139ef069c5c0e8aee78ef3cdccb97810",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T010322.792223Z-fdd559bf8e364149b8bbcaeead97496f.txt": {
+    "sha256": "49763e2d544a821202fb9d06acee237cfd5135927cee09c36d8d9f110eb28acc",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T010216.380431Z-68aa348c73284c8487bcd36c67bd2653.txt": {
+    "sha256": "b4546198ff2502e978f0a86c866e03d00e6dfd8973aea6ca968091dad3f9518d",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie.json": {
+    "sha256": "0c4474644cf9a1754056384dd5ec343d8efdc4af4720a474eee3f24a0ca351ef",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T010322.825312Z-8a874b70c9d4419786ab62240a4ea234.json": {
+    "sha256": "c628ce89baa38129429905c8f373db036ca479dbb8e8f73a9a7c24d72bfd3ece",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T010322.866129Z-697db15ca05242ebbc06f497fbd49a41.txt": {
+    "sha256": "e9b2f14b4364159ae03547edeb467ea1c425c9c133d23913a4afba7b24264788",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T010216.311958Z-77872d91e8014e63bacdfcc23e1a9aea.txt": {
+    "sha256": "ee0796cf6ba43ac15baf8b3e2c831a7744268bb965f12227fc72185b80ae4257",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T010216.228001Z-546fe8d50e994cde8d0ebc59be082ce2.json": {
+    "sha256": "eaeb602b84c37fc71b7782bd19aa4ff1079802a2933da3c360880a1c5dd78aab",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T010216.179914Z-cdf622d3b13d46518cca899cee2e9423.json": {
+    "sha256": "debeb40685434828c57f4d131dfc2f271e7d34323b455e3facd4e7b32662ca83",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T010216.406821Z-2baf8f93a77a4654a7aefa70c5abf24c.txt": {
+    "sha256": "9cfd8c58aa09104a680ff084514bf52d00d0c420412f1e5db22845d7a63dc582",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T010216.295458Z-0300475f1e874f189d1618c3ccdf2519.json": {
+    "sha256": "f760331fd8132ed6ad449fccebe54279d4f446fbdec01a39db3a7bc919507109",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T010322.762034Z-6f7d324ce8fa4204a0d891cfa11998af.txt": {
+    "sha256": "f58fc747c58ed33021d918088628e84dac5adbe8cdf923bb96085b3471898cfd",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T010322.796328Z-fef386dd6efd4dfe81caae93381ba00a.txt": {
+    "sha256": "43e52613b464a4ec978620feaaa4e84c57704b5bbcfb212b1d2521504ea50878",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T010322.792223Z-fdd559bf8e364149b8bbcaeead97496f.json": {
+    "sha256": "f91f6b1359846bc85412c14a7fbade868ecb22cbdb1bce38e771e88d2a499808",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T010216.311958Z-77872d91e8014e63bacdfcc23e1a9aea.json": {
+    "sha256": "bc8df157a85227729eb737199c5896659ed8a2cc287fb588fcae90b0db60a62a",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T010216.228001Z-546fe8d50e994cde8d0ebc59be082ce2.txt": {
+    "sha256": "2c21d774463e3012d17e23f648d80695e7460cf621fc088b72b14e95244ccf4f",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T010322.882355Z-3b02d74ac4a2436b8152c48be031701b.txt": {
+    "sha256": "e0764ccc56e032ec2e3f0b6ed03a536c8b81dd5fad3914d43fa2a039eb74f65d",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T010216.212275Z-d466429ded1e4b788bf5d1503d5b1382.txt": {
+    "sha256": "39c45f331f2a6a9a348b9df5f4953270e2639cbeb072d5afd5769c22fa778269",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T010322.882355Z-3b02d74ac4a2436b8152c48be031701b.json": {
+    "sha256": "d81e81884414318a2e0ab57e7c546bcb789becdaefd6ab520f133ee240e41a18",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T010216.212275Z-d466429ded1e4b788bf5d1503d5b1382.json": {
+    "sha256": "e77897679c38c44284cf10c6a74905962c8df1087be844ed762ca4f6c190753e",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T131701.528874Z-caa593ee7105466ca6bea68107dd0c82.json": {
+    "sha256": "28c443eb948307fe658ba34c4e3f1f563811618f3d9b5c1ff6a4287c78835261",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T010322.866129Z-697db15ca05242ebbc06f497fbd49a41.json": {
+    "sha256": "70def7a9ab0f91e6332664a1bf94111615879c304656e503c2311dba041f4087",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T010322.825312Z-8a874b70c9d4419786ab62240a4ea234.txt": {
+    "sha256": "8f283d7c029353eb0e77e2f2cb6b7d649cc0c50ffbd0f5cc1312e65cfcd73533",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T010216.406821Z-2baf8f93a77a4654a7aefa70c5abf24c.json": {
+    "sha256": "05933d3e666a0ef6ec0321d2b425239ad6330932e923f50301ee3a1bba6f0ec3",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T131611.161304Z-f0a46127670a48ba99b9c02fb64ae0e2.txt": {
+    "sha256": "14d09332d6c350f6559f32e30fac2ec2139ef069c5c0e8aee78ef3cdccb97810",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T131754.821304Z-25bbcf9b4a0b440b99178cf2b6f1debe.json": {
+    "sha256": "345a1b2a34e022f6cd47f811173d407f27d912ca06b142910a66dec017dd6d29",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T010322.785847Z-28c925dd424145e59220ab57eff3056d.txt": {
+    "sha256": "ec2cfd5f42e0821a8d98c3073c37f799ad7c9e9bc9776bc69d1ec75963de7002",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T010322.818326Z-2054c21af0ea4dbebe57e19504be3a8d.json": {
+    "sha256": "74ad079c42873ab5270bf621156136e5ad1d0466ea98082acec037790270b73d",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T010216.236173Z-02bc030e3b474518914e1401d62e72f2.json": {
+    "sha256": "97fd4830be0d4f01cd336e73a116725c178e01d7115308d534242b080e8fb109",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261104T212124.065287Z-3fea3802cff542f5a5804ea25b4249fa.txt": {
+    "sha256": "fd0750d8dd76cedd5bb3086e951d96c02b70fa4b70b4354fe3d1403028708df6",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T131701.528874Z-caa593ee7105466ca6bea68107dd0c82.txt": {
+    "sha256": "4586d51683c87564b2b0fffa153d0467ae12a7c6d32521d527b691a9b92fddbc",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261104T212124.065287Z-3fea3802cff542f5a5804ea25b4249fa.json": {
+    "sha256": "45aafb74b19a33278463fb881fd2b69bfaae194473f81c83d29f8fbfe455cecb",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T010322.785847Z-28c925dd424145e59220ab57eff3056d.json": {
+    "sha256": "cd12e421cf2a0ce9404369181503070d9b841c60fb9b7e05057c2a5628132d8e",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T010322.762034Z-6f7d324ce8fa4204a0d891cfa11998af.json": {
+    "sha256": "aaed9ab0894b6ba34aaec02727c3735ae423328914b19b0ae043dc208e33fbbd",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T131754.821304Z-25bbcf9b4a0b440b99178cf2b6f1debe.txt": {
+    "sha256": "a9db5352e03a35d0be063c0add19d76b96ab4b05b3d358d300504a10e90c9e84",
+    "mode": 384
+  },
+  "/home/ti-lex-al/.local/share/ti-lexos-kali/rapports/cookie/cookie-20261105T010216.295458Z-0300475f1e874f189d1618c3ccdf2519.txt": {
+    "sha256": "ae636c5af93cb802b17fc54b700bee5d61a36d281417f164f0c39e37f622047f",
+    "mode": 384
+  }
+}

@@ -1,0 +1,278 @@
+{
+  "host": {
+    "nmap": {
+      "installed": true,
+      "path": "/usr/bin/nmap",
+      "environment": "host",
+      "permissions": "TCP connect/inventaire sans sudo ; SYN/OS/paquets bruts : privilèges réseau.",
+      "help_supported": true,
+      "rights_verified": false
+    },
+    "tshark": {
+      "installed": true,
+      "path": "/usr/bin/tshark",
+      "environment": "host",
+      "permissions": "Lecture de captures sans sudo ; capture : droits dumpcap/interface.",
+      "help_supported": true,
+      "rights_verified": false
+    },
+    "dumpcap": {
+      "installed": true,
+      "path": "/usr/bin/dumpcap",
+      "environment": "host",
+      "permissions": "Liste des interfaces accessible selon droits ; capture : droits réseau.",
+      "help_supported": true,
+      "rights_verified": false
+    },
+    "wireshark": {
+      "installed": true,
+      "path": "/usr/bin/wireshark",
+      "environment": "host",
+      "permissions": "Lecture locale sans sudo ; capture : droits dumpcap.",
+      "help_supported": true,
+      "rights_verified": false
+    },
+    "tcpdump": {
+      "installed": true,
+      "path": "/usr/bin/tcpdump",
+      "environment": "host",
+      "permissions": "Lecture locale sans sudo ; capture : droits réseau.",
+      "help_supported": true,
+      "rights_verified": false
+    },
+    "lynis": {
+      "installed": true,
+      "path": "/usr/sbin/lynis",
+      "environment": "host",
+      "permissions": "Audit partiel sans sudo ; audit complet : accès administrateur.",
+      "help_supported": true,
+      "rights_verified": false
+    },
+    "hashcat": {
+      "installed": true,
+      "path": "/usr/bin/hashcat",
+      "environment": "host",
+      "permissions": "Sans sudo ; accès GPU et fichiers autorisés requis.",
+      "help_supported": true,
+      "rights_verified": false
+    },
+    "john": {
+      "installed": true,
+      "path": "/usr/sbin/john",
+      "environment": "host",
+      "permissions": "Sans sudo ; accès aux fichiers autorisés requis.",
+      "help_supported": true,
+      "rights_verified": false
+    },
+    "wifite": {
+      "installed": false,
+      "path": null,
+      "environment": "host",
+      "permissions": "Aide sans sudo selon version ; radio/monitor : privilèges et autorisation Wi-Fi.",
+      "help_supported": true,
+      "rights_verified": false
+    },
+    "aircrack-ng": {
+      "installed": true,
+      "path": "/usr/bin/aircrack-ng",
+      "environment": "host",
+      "permissions": "Analyse de fichier sans sudo ; acquisition radio : privilèges.",
+      "help_supported": true,
+      "rights_verified": false
+    },
+    "airmon-ng": {
+      "installed": true,
+      "path": "/usr/sbin/airmon-ng",
+      "environment": "host",
+      "permissions": "Administration radio privilégiée ; aide non exécutée automatiquement.",
+      "help_supported": false,
+      "rights_verified": false
+    },
+    "airodump-ng": {
+      "installed": true,
+      "path": "/usr/sbin/airodump-ng",
+      "environment": "host",
+      "permissions": "Capture radio : droits réseau et autorisation Wi-Fi.",
+      "help_supported": true,
+      "rights_verified": false
+    },
+    "iw": {
+      "installed": true,
+      "path": "/usr/sbin/iw",
+      "environment": "host",
+      "permissions": "Consultation sans sudo ; modification radio : CAP_NET_ADMIN.",
+      "help_supported": true,
+      "rights_verified": false
+    },
+    "ip": {
+      "installed": true,
+      "path": "/usr/bin/ip",
+      "environment": "host",
+      "permissions": "Consultation sans sudo ; modification : CAP_NET_ADMIN.",
+      "help_supported": true,
+      "rights_verified": false
+    },
+    "ss": {
+      "installed": true,
+      "path": "/usr/bin/ss",
+      "environment": "host",
+      "permissions": "Consultation sans sudo ; détails des processus limités par propriétaire.",
+      "help_supported": true,
+      "rights_verified": false
+    },
+    "nikto": {
+      "installed": false,
+      "path": null,
+      "environment": "host",
+      "permissions": "Sans sudo ; audit web actif soumis au périmètre.",
+      "help_supported": true,
+      "rights_verified": false
+    },
+    "sqlmap": {
+      "installed": true,
+      "path": "/usr/bin/sqlmap",
+      "environment": "host",
+      "permissions": "Sans sudo ; tests web actifs soumis au périmètre.",
+      "help_supported": true,
+      "rights_verified": false
+    },
+    "gobuster": {
+      "installed": true,
+      "path": "/usr/bin/gobuster",
+      "environment": "host",
+      "permissions": "Sans sudo ; découverte active soumise au périmètre.",
+      "help_supported": true,
+      "rights_verified": false
+    },
+    "ffuf": {
+      "installed": true,
+      "path": "/usr/bin/ffuf",
+      "environment": "host",
+      "permissions": "Sans sudo ; découverte active soumise au périmètre.",
+      "help_supported": true,
+      "rights_verified": false
+    },
+    "whatweb": {
+      "installed": true,
+      "path": "/usr/bin/whatweb",
+      "environment": "host",
+      "permissions": "Sans sudo ; requêtes web actives soumises au périmètre.",
+      "help_supported": true,
+      "rights_verified": false
+    },
+    "curl": {
+      "installed": true,
+      "path": "/usr/bin/curl",
+      "environment": "host",
+      "permissions": "Sans sudo ; requêtes réseau soumises au périmètre.",
+      "help_supported": true,
+      "rights_verified": false
+    },
+    "openssl": {
+      "installed": true,
+      "path": "/usr/bin/openssl",
+      "environment": "host",
+      "permissions": "Sans sudo ; accès aux fichiers/clés requis.",
+      "help_supported": true,
+      "rights_verified": false
+    },
+    "dig": {
+      "installed": true,
+      "path": "/usr/bin/dig",
+      "environment": "host",
+      "permissions": "Sans sudo ; requêtes DNS actives soumises au périmètre.",
+      "help_supported": true,
+      "rights_verified": false
+    },
+    "whois": {
+      "installed": true,
+      "path": "/usr/bin/whois",
+      "environment": "host",
+      "permissions": "Sans sudo ; requêtes réseau soumises au périmètre.",
+      "help_supported": true,
+      "rights_verified": false
+    },
+    "exiftool": {
+      "installed": true,
+      "path": "/usr/bin/exiftool",
+      "environment": "host",
+      "permissions": "Sans sudo ; accès aux fichiers requis ; -ver affiche la version.",
+      "help_supported": true,
+      "rights_verified": false
+    },
+    "strings": {
+      "installed": true,
+      "path": "/usr/bin/strings",
+      "environment": "host",
+      "permissions": "Sans sudo ; lecture de fichiers autorisés.",
+      "help_supported": true,
+      "rights_verified": false
+    },
+    "file": {
+      "installed": true,
+      "path": "/usr/bin/file",
+      "environment": "host",
+      "permissions": "Sans sudo ; lecture de fichiers autorisés.",
+      "help_supported": true,
+      "rights_verified": false
+    },
+    "binwalk": {
+      "installed": true,
+      "path": "/usr/bin/binwalk",
+      "environment": "host",
+      "permissions": "Sans sudo ; extraction non activée par cette intégration.",
+      "help_supported": true,
+      "rights_verified": false
+    },
+    "radare2": {
+      "installed": false,
+      "path": null,
+      "environment": "host",
+      "permissions": "Sans sudo ; analyse statique de fichiers autorisés.",
+      "help_supported": true,
+      "rights_verified": false
+    }
+  },
+  "kali": {
+    "launcher": {
+      "path": "/home/ti-lex-al/.local/bin/kali",
+      "container": "kali-lexos",
+      "type": "distrobox"
+    },
+    "status": "unavailable",
+    "tools": {},
+    "reason": "Failed to obtain podman configuration: set sticky bit on: chmod /run/user/1002/libpod: read-only file system\n"
+  },
+  "supported_catalogue": [
+    "nmap",
+    "tshark",
+    "dumpcap",
+    "wireshark",
+    "tcpdump",
+    "lynis",
+    "hashcat",
+    "john",
+    "wifite",
+    "aircrack-ng",
+    "airmon-ng",
+    "airodump-ng",
+    "iw",
+    "ip",
+    "ss",
+    "nikto",
+    "sqlmap",
+    "gobuster",
+    "ffuf",
+    "whatweb",
+    "curl",
+    "openssl",
+    "dig",
+    "whois",
+    "exiftool",
+    "strings",
+    "file",
+    "binwalk",
+    "radare2"
+  ],
+  "note": "Catalogue borné, pas une liste exhaustive des paquets Kali. Seuls installed=true sont observés disponibles."
+}

@@ -1,0 +1,358 @@
+{
+  "automated_tests": {
+    "audit_adapter": 72,
+    "auto_v5": 10,
+    "total": 82,
+    "status": "passed"
+  },
+  "command_checks": [
+    {
+      "argv": [
+        "bash",
+        "integration/prevost",
+        "--help"
+      ],
+      "returncode": 0,
+      "expected": 0
+    },
+    {
+      "argv": [
+        "bash",
+        "integration/prevost",
+        "outils"
+      ],
+      "returncode": 0,
+      "expected": 0
+    },
+    {
+      "argv": [
+        "bash",
+        "integration/prevost",
+        "stockage"
+      ],
+      "returncode": 0,
+      "expected": 0
+    },
+    {
+      "argv": [
+        "bash",
+        "integration/prevost",
+        "rapport"
+      ],
+      "returncode": 0,
+      "expected": 0
+    },
+    {
+      "argv": [
+        "bash",
+        "integration/prevost",
+        "mission",
+        "--cible",
+        "AUTH-inconnue"
+      ],
+      "returncode": 1,
+      "expected": 1
+    },
+    {
+      "argv": [
+        "bash",
+        "integration/prevost",
+        "scan",
+        "--cible",
+        "AUTH-inconnue",
+        "--executer"
+      ],
+      "returncode": 1,
+      "expected": 1
+    },
+    {
+      "argv": [
+        "bash",
+        "integration/prevost",
+        "rapport",
+        "--mission",
+        "RUN-inconnue"
+      ],
+      "returncode": 1,
+      "expected": 1
+    },
+    {
+      "argv": [
+        "bash",
+        "integration/prevost",
+        "connexion",
+        "--host",
+        "utilisateur@lexos.local"
+      ],
+      "returncode": 0,
+      "expected": 0
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "-B",
+        "-m",
+        "mon_secret_cookie",
+        "--help"
+      ],
+      "returncode": 0,
+      "expected": 0
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "-B",
+        "-m",
+        "mon_secret_cookie",
+        "--version"
+      ],
+      "returncode": 0,
+      "expected": 0
+    }
+  ],
+  "preservation": [
+    {
+      "path": "/home/ti-lex-al/.local/bin/prevost-ia",
+      "before": "1da58a05bae6be954aca282af2d924209b3183ca2a6c4d213d097e920172c48e",
+      "after": "1da58a05bae6be954aca282af2d924209b3183ca2a6c4d213d097e920172c48e",
+      "unchanged": true
+    },
+    {
+      "path": "/home/ti-lex-al/.local/bin/kali",
+      "before": "c37c6f840e238d299a95d0fd250d2fbd71ec9d3e32786636489488029542406d",
+      "after": "c37c6f840e238d299a95d0fd250d2fbd71ec9d3e32786636489488029542406d",
+      "unchanged": true
+    },
+    {
+      "path": "/home/ti-lex-al/.local/bin/lexos-kali",
+      "before": "52f4e4cd863a079dad3f52544ea4a257cb33d36ce4600e558b598c922320274c",
+      "after": "52f4e4cd863a079dad3f52544ea4a257cb33d36ce4600e558b598c922320274c",
+      "unchanged": true
+    },
+    {
+      "path": "/home/ti-lex-al/.local/bin/kali-menu",
+      "before": "2281515923b5b1c3cd966ee6e7fb5052f2dca5bfc5a7ef9e4ad7344fe29c6815",
+      "after": "2281515923b5b1c3cd966ee6e7fb5052f2dca5bfc5a7ef9e4ad7344fe29c6815",
+      "unchanged": true
+    },
+    {
+      "path": "/home/ti-lex-al/LexOS-Projets/prevost-auto-v5/prevost-ia",
+      "before": "0f7b6dc6b6c4a6b665dcf3f310979332429c3ccd7daea940841065877a794098",
+      "after": "0f7b6dc6b6c4a6b665dcf3f310979332429c3ccd7daea940841065877a794098",
+      "unchanged": true
+    },
+    {
+      "path": "/home/ti-lex-al/LexOS-Projets/prevost-auto-v5/lexos-menu",
+      "before": "1ff8371d5464dd4c28856496d00d69022bbdd4fed088b9fc8abda3b5ff10c379",
+      "after": "1ff8371d5464dd4c28856496d00d69022bbdd4fed088b9fc8abda3b5ff10c379",
+      "unchanged": true
+    },
+    {
+      "path": "/home/ti-lex-al/LexOS-Projets/mon-secret-cookie/mon_secret_cookie/fusion.py",
+      "before": "8a758c2b5ade1a156670273b3e5765ea89e35287570d65141a87cbffe7d6b4d4",
+      "after": "8a758c2b5ade1a156670273b3e5765ea89e35287570d65141a87cbffe7d6b4d4",
+      "unchanged": true
+    },
+    {
+      "path": "/home/ti-lex-al/LexOS-Projets/mon-secret-cookie/mon_secret_cookie/network.py",
+      "before": "cf4acd6ea12fbba686b88bbc8138737cfdf332f68c309cac0d6998f9f2ee7b5e",
+      "after": "cf4acd6ea12fbba686b88bbc8138737cfdf332f68c309cac0d6998f9f2ee7b5e",
+      "unchanged": true
+    },
+    {
+      "path": "/home/ti-lex-al/LexOS-Projets/mon-secret-cookie/mon_secret_cookie/core.py",
+      "before": "2d4e3157ea231b0a668a45352891ef2bf9b70c601ce6489a67377a81e7d6b465",
+      "after": "2d4e3157ea231b0a668a45352891ef2bf9b70c601ce6489a67377a81e7d6b465",
+      "unchanged": true
+    },
+    {
+      "path": "/home/ti-lex-al/LexOS-Projets/mon-secret-cookie/mon_secret_cookie/server.py",
+      "before": "d06551d8f762a348cd98bad5bb4a4365edfbfaa2219f19443bd10789329cc3cf",
+      "after": "d06551d8f762a348cd98bad5bb4a4365edfbfaa2219f19443bd10789329cc3cf",
+      "unchanged": true
+    },
+    {
+      "path": "/home/ti-lex-al/LexOS-Projets/mon-secret-cookie/mon_secret_cookie/lab.py",
+      "before": "d6dada8c7d85e4d0dec246efde64f0704fa97f9a8eb045e49535cfe5ad2a06d8",
+      "after": "d6dada8c7d85e4d0dec246efde64f0704fa97f9a8eb045e49535cfe5ad2a06d8",
+      "unchanged": true
+    },
+    {
+      "path": "/home/ti-lex-al/LexOS-Projets/mon-secret-cookie/mon_secret_cookie/diagnostics.py",
+      "before": "bd0725019c30d36ccb4adf9cb35c318f030e0edd6114155689f6d047df025428",
+      "after": "bd0725019c30d36ccb4adf9cb35c318f030e0edd6114155689f6d047df025428",
+      "unchanged": true
+    },
+    {
+      "path": "/home/ti-lex-al/LexOS-Projets/mon-secret-cookie/mon_secret_cookie/GUIDE_COOKIES.md",
+      "before": "521c1a52299657b8ad343a8f1efdd575c9c58322172a4d96b9ad74d3087bb417",
+      "after": "521c1a52299657b8ad343a8f1efdd575c9c58322172a4d96b9ad74d3087bb417",
+      "unchanged": true
+    },
+    {
+      "path": "/home/ti-lex-al/LexOS-Projets/mon-secret-cookie/mon_secret_cookie/cookies.py",
+      "before": "463191bf93b12802d1a4182e7106e3a9b56ad258e33b4e79dfa3bb3790eea9df",
+      "after": "463191bf93b12802d1a4182e7106e3a9b56ad258e33b4e79dfa3bb3790eea9df",
+      "unchanged": true
+    },
+    {
+      "path": "/home/ti-lex-al/LexOS-Projets/mon-secret-cookie/mon_secret_cookie/__init__.py",
+      "before": "dc301687966750e5418598828af38763f833189b610f921c8058eccc361c1213",
+      "after": "dc301687966750e5418598828af38763f833189b610f921c8058eccc361c1213",
+      "unchanged": true
+    },
+    {
+      "path": "/home/ti-lex-al/LexOS-Projets/mon-secret-cookie/mon_secret_cookie/passwords.py",
+      "before": "5af2232d086c3fae7923a4a5d292cdc0b28e6bf6f65b603e3d858ca0627c7ce6",
+      "after": "5af2232d086c3fae7923a4a5d292cdc0b28e6bf6f65b603e3d858ca0627c7ce6",
+      "unchanged": true
+    },
+    {
+      "path": "/home/ti-lex-al/LexOS-Projets/mon-secret-cookie/mon_secret_cookie/branding.py",
+      "before": "49e446dc39d515a2031088049193752052f7cc7398a11f6f1d7c3400d8aa665f",
+      "after": "49e446dc39d515a2031088049193752052f7cc7398a11f6f1d7c3400d8aa665f",
+      "unchanged": true
+    },
+    {
+      "path": "/home/ti-lex-al/LexOS-Projets/mon-secret-cookie/mon_secret_cookie/__main__.py",
+      "before": "f35124e530c67e144b61bdfca212301084982fc1408a2315f382617faa6e920f",
+      "after": "f35124e530c67e144b61bdfca212301084982fc1408a2315f382617faa6e920f",
+      "unchanged": true
+    },
+    {
+      "path": "/home/ti-lex-al/LexOS-Projets/mon-secret-cookie/mon_secret_cookie/platforms.py",
+      "before": "c9ac930f8a0d94501d9f5ef667ab4d50df7ea3f8a1c7fe1bc8e772ac45d5a283",
+      "after": "c9ac930f8a0d94501d9f5ef667ab4d50df7ea3f8a1c7fe1bc8e772ac45d5a283",
+      "unchanged": true
+    },
+    {
+      "path": "/home/ti-lex-al/LexOS-Projets/mon-secret-cookie/mon_secret_cookie/security.py",
+      "before": "c1319e4ffc57310a20b39b48a5b9a7e7047367b85b6422642e67d51d31be8baa",
+      "after": "c1319e4ffc57310a20b39b48a5b9a7e7047367b85b6422642e67d51d31be8baa",
+      "unchanged": true
+    },
+    {
+      "path": "/home/ti-lex-al/LexOS-Projets/mon-secret-cookie/mon_secret_cookie/cli.py",
+      "before": "bd2584d2a159c6e691cd54cc1cf21efee151b013f39f27df6bd3f34821b06fd9",
+      "after": "bd2584d2a159c6e691cd54cc1cf21efee151b013f39f27df6bd3f34821b06fd9",
+      "unchanged": true
+    },
+    {
+      "path": "/home/ti-lex-al/LexOS-Projets/mon-secret-cookie/mon_secret_cookie/audit.py",
+      "before": "bc1f1461d36a2cdf62e49ab4a14dffa32c241cae1af2ffae3dbde88a74ab48d3",
+      "after": "bc1f1461d36a2cdf62e49ab4a14dffa32c241cae1af2ffae3dbde88a74ab48d3",
+      "unchanged": true
+    },
+    {
+      "path": "/home/ti-lex-al/LexOS-Projets/mon-secret-cookie/tests/test_platforms.py",
+      "before": "05e86ed7f633d2f239ce5e413e3c712d53c215e7cc28c8b28d3e16c3130b38ba",
+      "after": "05e86ed7f633d2f239ce5e413e3c712d53c215e7cc28c8b28d3e16c3130b38ba",
+      "unchanged": true
+    },
+    {
+      "path": "/home/ti-lex-al/LexOS-Projets/mon-secret-cookie/tests/test_cli.py",
+      "before": "490deca27a5d1c791eb5f0f578c9e996547fe237fc9fe934f1bee8b0d64d1273",
+      "after": "490deca27a5d1c791eb5f0f578c9e996547fe237fc9fe934f1bee8b0d64d1273",
+      "unchanged": true
+    },
+    {
+      "path": "/home/ti-lex-al/LexOS-Projets/mon-secret-cookie/tests/test_fusion.py",
+      "before": "fa591b4058affce8244b68b1f18c28a40e343e3e9d1cff4738d38848903cb45c",
+      "after": "fa591b4058affce8244b68b1f18c28a40e343e3e9d1cff4738d38848903cb45c",
+      "unchanged": true
+    },
+    {
+      "path": "/home/ti-lex-al/LexOS-Projets/mon-secret-cookie/tests/test_security.py",
+      "before": "27308acba4b501866017d359ed59101444b97853b28ac66a6891671f6a5bce67",
+      "after": "27308acba4b501866017d359ed59101444b97853b28ac66a6891671f6a5bce67",
+      "unchanged": true
+    },
+    {
+      "path": "/home/ti-lex-al/LexOS-Projets/mon-secret-cookie/integration/UTILISATION.md",
+      "before": "53aa56d919694ac6f25a229187057052775848b7af0039f7c1efb2813bc93452",
+      "after": "53aa56d919694ac6f25a229187057052775848b7af0039f7c1efb2813bc93452",
+      "unchanged": true
+    },
+    {
+      "path": "/home/ti-lex-al/LexOS-Projets/mon-secret-cookie/integration/VALIDATION.md",
+      "before": "1e4767dc809cef8f23d8e4aebe703112d9b0b034d55961b2776836edc677ad6f",
+      "after": "1e4767dc809cef8f23d8e4aebe703112d9b0b034d55961b2776836edc677ad6f",
+      "unchanged": true
+    },
+    {
+      "path": "/home/ti-lex-al/LexOS-Projets/mon-secret-cookie/integration/prevost",
+      "before": "72b34d81d33a941ab32b99d54fc38bdaa507cca33c700d59fcbc047e9ebfbe11",
+      "after": "72b34d81d33a941ab32b99d54fc38bdaa507cca33c700d59fcbc047e9ebfbe11",
+      "unchanged": true
+    },
+    {
+      "path": "/home/ti-lex-al/LexOS-Projets/mon-secret-cookie/integration/TERMUS.md",
+      "before": "7d9fe4ec4123e4a6cca51ebdc4a08682c4ad2535e91b8a1742dd58bc622aa75e",
+      "after": "7d9fe4ec4123e4a6cca51ebdc4a08682c4ad2535e91b8a1742dd58bc622aa75e",
+      "unchanged": true
+    },
+    {
+      "path": "/home/ti-lex-al/LexOS-Projets/mon-secret-cookie/integration/PLAN.md",
+      "before": "e638d664b699cb2fde87f53decb67e3c7d2b5c672ed62d10dc8b5eeba74912cb",
+      "after": "e638d664b699cb2fde87f53decb67e3c7d2b5c672ed62d10dc8b5eeba74912cb",
+      "unchanged": true
+    },
+    {
+      "path": "/home/ti-lex-al/LexOS-Projets/mon-secret-cookie/README.md",
+      "before": "e01f3eba26131b62b3db10f1ee6bc0712ec03e1b4b989c75a8a62c3b00790930",
+      "after": "e01f3eba26131b62b3db10f1ee6bc0712ec03e1b4b989c75a8a62c3b00790930",
+      "unchanged": true
+    },
+    {
+      "path": "/home/ti-lex-al/LexOS-Projets/mon-secret-cookie/pyproject.toml",
+      "before": "40296f11d11e3e60a66417a2ac815f9738d191be7b2a80473e6dde988c2ab6c3",
+      "after": "40296f11d11e3e60a66417a2ac815f9738d191be7b2a80473e6dde988c2ab6c3",
+      "unchanged": true
+    },
+    {
+      "path": "/etc/systemd/system/ollama.service.d/lexos.conf",
+      "before": "bb7a339ca5ec2a1f8b136c0da58b72f226f875af9a0436d40fee25b946d61b9b",
+      "after": "bb7a339ca5ec2a1f8b136c0da58b72f226f875af9a0436d40fee25b946d61b9b",
+      "unchanged": true
+    },
+    {
+      "path": "/etc/systemd/system/ollama.service",
+      "before": "4173eb609487e8a374be7447b8c1b3667df8a1604f15f6dcb3e51c064a21e872",
+      "after": "4173eb609487e8a374be7447b8c1b3667df8a1604f15f6dcb3e51c064a21e872",
+      "unchanged": true
+    }
+  ],
+  "registry": {
+    "path": "/home/ti-lex-al/.local/state/mon-secret-cookie",
+    "exists": false,
+    "created": false
+  },
+  "kali": {
+    "launcher": "distrobox enter kali-lexos",
+    "status": "blocked",
+    "wifite_version": null,
+    "reason": "Podman runtime directory read-only; no permissions bypass"
+  },
+  "lynis": {
+    "version": "3.1.4-1",
+    "files_checked": [
+      "/usr/share/lynis/include/consts",
+      "/usr/share/lynis/include/functions"
+    ],
+    "visible_uid": 65534,
+    "visible_gid": 65534,
+    "mode": "0644",
+    "uid_map": "1002          0          1",
+    "package_content_verification": "dpkg --verify lynis returned 0 without output",
+    "ownership_changed": false
+  },
+  "ssh": {
+    "client_installed": true,
+    "server_installed": false,
+    "host_public_keys_present": false,
+    "fingerprint": null,
+    "service_activated": false,
+    "connection_established": false
+  },
+  "live_network_scan_executed": false
+}

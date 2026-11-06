@@ -1,0 +1,90 @@
+"""Logo terminal en relief, sans dépendance graphique."""
+import os
+import shutil
+import sys
+
+FONT = {
+    'L': ('10000', '10000', '10000', '10000', '11111'),
+    'E': ('11111', '10000', '11110', '10000', '11111'),
+    'S': ('11111', '10000', '11111', '00001', '11111'),
+    'C': ('11111', '10000', '10000', '10000', '11111'),
+    'R': ('11110', '10001', '11110', '10010', '10001'),
+    'T': ('11111', '00100', '00100', '00100', '00100'),
+    'O': ('01110', '10001', '10001', '10001', '01110'),
+    'K': ('10001', '10010', '11100', '10010', '10001'),
+    'I': ('11111', '00100', '00100', '00100', '11111'),
+    ' ': ('000',) * 5,
+}
+
+
+def _word(text, face, shadow, colored):
+    pixels = set()
+    offset = 0
+    for letter in text:
+        glyph = FONT[letter]
+        for y, row in enumerate(glyph):
+            for x, bit in enumerate(row):
+                if bit == '1':
+                    pixels.add((offset + x, y))
+        offset += len(glyph[0]) + 1
+    relief = {(x + depth, y + depth) for x, y in pixels for depth in (1, 2)} - pixels
+    rows = []
+    for y in range(7):
+        row = []
+        for x in range(offset + 1):
+            if (x, y) in pixels:
+                row.append((f'\033[1;48;5;16;38;5;{face}m' if colored else '') + '█')
+            elif (x, y) in relief:
+                row.append((f'\033[48;5;16;38;5;{shadow}m' if colored else '') + '▓')
+            else:
+                row.append(('\033[48;5;16m' if colored else '') + ' ')
+        rows.append(''.join(row) + ('\033[0m' if colored else ''))
+    return '\n'.join(rows)
+
+
+def _cookie(colored, radius=3):
+    """Cookie rond avec pépites, généré sur une grille pour un alignement exact."""
+    body = '\033[1;48;5;16;38;5;223m' if colored else ''   # beige
+    chip = '\033[1;48;5;16;38;5;94m' if colored else ''    # chocolat brun
+    blank = '\033[48;5;16m' if colored else ''
+    reset = '\033[0m' if colored else ''
+    chips = {(-1, -1), (1, -1), (0, 1), (2, 1), (-2, 0), (-1, 2)}
+    rows = []
+    for y in range(-radius, radius + 1):
+        cells = []
+        for x in range(-radius, radius + 1):
+            if x * x + y * y <= radius * radius + 1:
+                cells.append((chip + '■') if (x, y) in chips else (body + '█'))
+            else:
+                cells.append(blank + ' ')
+        rows.append(''.join(cells) + reset)
+    return rows
+
+
+def logo():
+    if sys.platform == 'win32' and sys.stdout.isatty():
+        # Windows Terminal / console VT : activation des couleurs si disponible.
+        try:
+            import ctypes
+            handle=ctypes.windll.kernel32.GetStdHandle(-11)
+            mode=ctypes.c_ulong()
+            if ctypes.windll.kernel32.GetConsoleMode(handle,ctypes.byref(mode)):
+                ctypes.windll.kernel32.SetConsoleMode(handle,mode.value | 4)
+        except (AttributeError,OSError):
+            pass
+    colored = sys.stdout.isatty() and 'NO_COLOR' not in os.environ and os.environ.get('TERM') != 'dumb'
+    width = shutil.get_terminal_size(fallback=(80, 24)).columns
+    if width < 54:
+        lime = '\033[1;40;38;5;154m' if colored else ''
+        orange = '\033[1;40;38;5;208m' if colored else ''
+        beige = '\033[1;40;38;5;223m' if colored else ''
+        brown = '\033[1;40;38;5;94m' if colored else ''
+        reset = '\033[0m' if colored else ''
+        cookie = f'{beige}(█{brown}■{beige}█{brown}■{beige}█){reset}'
+        return f'{lime}LE SECRET{reset}\n{orange}COOKIE{reset} {cookie}\n  ▓▓▓▓▓▓'
+    secret = _word('LE SECRET', 154, 28, colored)
+    word = _word('COOKIE', 208, 130, colored).split('\n')
+    biscuit = _cookie(colored)
+    # Cookie aligné à droite du mot COOKIE (7 lignes de part et d'autre).
+    cookie_line = '\n'.join(f'{w}  {b}' for w, b in zip(word, biscuit))
+    return '\n'.join((secret, '', cookie_line))

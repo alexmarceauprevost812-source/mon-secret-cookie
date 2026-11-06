@@ -1,6 +1,6 @@
 # mon-secret-cookie
 
-Outil CLI Python pour **Linux (Kali Linux et Ubuntu), Termux (Android) et Windows**, audit défensif et laboratoire autorisé. Interface interactive TI-LEX noir/vert, avec logo en relief « LE SECRET » vert lime et « COOKIE » orange. Le logo se simplifie dans les petits terminaux ; `NO_COLOR=1` désactive ses couleurs. Python 3.10 minimum.
+Outil CLI Python pour **Linux (Kali Linux et Ubuntu), Termux (Android) et Windows**, audit défensif et laboratoire autorisé. Interface interactive TI-LEXOS KALI noire, rouge et blanche, avec logo en relief. Le logo se simplifie dans les petits terminaux ; `NO_COLOR=1` désactive ses couleurs. Python 3.10 minimum.
 
 ## Security Pro 2.1 — intégration IA locale
 
@@ -297,3 +297,163 @@ Les adaptateurs Windows et les restrictions Termux sont couverts par des tests s
 
 Consultez le [guide pas à pas](mon_secret_cookie/GUIDE_COOKIES.md), ou lancez `mon-secret-cookie cookie-guide` (option 13 du menu). Il explique comment créer un cookie fictif sur `127.0.0.1:8000`, voir `Set-Cookie`, l’enregistrer avec curl, le renvoyer, l’analyser et l’effacer. Les commandes sont adaptées à Linux, Termux et PowerShell Windows.
 
+
+## Surveillance locale des nouveaux appareils
+
+Les choix 1 à 21 sont conservés. Le choix **22** ouvre `terminal-codex`
+(lanceur du PATH, sinon script `integration/terminal-codex.py`). Le choix **23**
+surveille le LAN jusqu’à Ctrl+C et le choix **24** affiche l’inventaire persistant.
+
+```bash
+cd /home/ti-lex-al/LexOS-Projets/mon-secret-cookie
+python3 -m mon_secret_cookie menu
+python3 -m mon_secret_cookie surveillance --once
+python3 -m mon_secret_cookie surveillance --interval 30
+python3 -m mon_secret_cookie surveillance --inventaire
+```
+
+Sur Linux, la surveillance lit uniquement `ip -j neigh show` : aucune sonde,
+aucune analyse active d’un inconnu. Chaque identité jamais observée déclenche
+une alerte terminal (cloche et texte) et une notification bureau si `notify-send`
+et la session graphique sont disponibles. Le premier passage signale tous les
+appareils observés. « Connu » signifie déjà observé, sans accorder d’autorisation.
+Les premières et dernières détections sont en UTC ; MAC absente : valeur `null`.
+Une MAC disponible permet de suivre un changement d’IP. Sans MAC, une nouvelle IP
+crée une nouvelle identité ; une MAC aléatoire peut aussi créer une nouvelle entrée.
+Le cache peut être incomplet ou ancien : dernière détection signifie dernière
+observation du cache, pas une preuve de présence en ligne. Les absences ne suppriment
+pas les appareils connus. Aucune collecte de cookies de navigateur, mots de passe
+ou jetons de session n’est effectuée par cette surveillance.
+
+Fichiers : `~/.local/state/mon-secret-cookie/surveillance/inventaire.json` et
+`cookie.txt` (événements JSON par ligne, permissions 600, dossier 700).
+`MSC_STATE_DIR` permet de déplacer ce stockage. Le journal existant des rapports
+généraux est conservé séparément. Une seule surveillance peut écrire à la fois.
+Un échec du journal arrête le cycle. Le journal croît à chaque observation ;
+prévoir son archivage lors d’un usage prolongé. Cette surveillance utilise le
+verrouillage Linux/Unix ; le fonctionnement Windows n’est pas validé.
+
+Les analyses actives restent distinctes : configurer une autorisation explicite
+avec `cibles ajouter` (exemple plus haut), puis lancer `scan complet --cible AUTH-…`.
+La surveillance ne lance jamais automatiquement cette mission. Les commandes
+historiques autonomes conservent leurs confirmations et ne sont pas utilisées
+par la surveillance.
+
+Sauvegardes avant modification : `backups/network-watch-20261105/`.
+
+Les alertes de nouvel appareil sont désactivées par défaut. La découverte passive,
+l’inventaire et le journal local `cookie.txt` restent actifs avec :
+
+```bash
+python3 -m mon_secret_cookie surveillance --once
+python3 -m mon_secret_cookie surveillance --inventaire
+```
+
+`--notifications` active explicitement les alertes ; `--no-notifications` les
+maintient désactivées. Une identité déjà inventoriée ne déclenche pas d’alerte.
+Le journal est disponible dans `~/.local/state/mon-secret-cookie/surveillance/cookie.txt`
+(ou sous `MSC_STATE_DIR`). Il contient les événements réseau, aucune extraction
+de cookies de navigateur ni de sessions d’un appareil découvert.
+
+## PRÉVOST : diagnostics locaux et installation du catalogue
+
+Les choix 1 à 21 et **22 terminal-codex** sont conservés. Les nouvelles entrées :
+**25** aide d’un outil sur LexOS/Kali, **26** diagnostic PRÉVOST avec rapport,
+**27** plan d’installation des outils. **16** affiche les diagnostics du catalogue.
+Les entrées indiquent disponible/manquant ; les vérifications signalent aussi les
+états erreur. La présence et l’aide d’un outil ne prouvent pas les droits radio,
+GPU ou réseau, ni la disponibilité de son service (notamment Ollama).
+
+Commandes disponibles depuis LexOS, indépendamment du répertoire courant :
+
+```bash
+mon-secret-cookie menu
+prevost outils
+prevost outils --diagnostic --kali
+prevost aide-outil john
+prevost aide-outil nmap --kali
+prevost diagnostic
+prevost diagnostic --kali --no-notifications
+prevost diagnostic --output nouveau-diagnostic.json
+prevost surveillance --once
+prevost surveillance --no-notifications
+```
+
+`prevost diagnostic` exécute uniquement des aides/versions à arguments fermés,
+sans shell et avec délai maximal de 15 secondes par commande. Un échec n’empêche
+pas les autres vérifications ; la mission devient partielle. Un échec de stockage
+est bloquant. Le registre contient aussi les chemins de commandes, l’environnement,
+les outils absents, les erreurs de lancement et les conteneurs inaccessibles.
+Aucun conteneur arrêté n’est démarré pour un diagnostic. John classique affiche
+son aide sans argument ; Wifite est toujours appelé avec `--help`.
+
+Les rapports sont dans `~/.local/state/mon-secret-cookie/diagnostics/cookie.txt`
+(journal lisible, ajouté à chaque mission) et `DIAG-….json` (export par mission).
+Le dossier est privé (700), les fichiers privés (600). `MSC_STATE_DIR` déplace
+le stockage. Ces nouveaux rapports restent séparés des anciens `cookie.txt`
+et de l’inventaire. L’export `--output` exige un nouveau fichier.
+Les données persistées sont typées : outil, date UTC, environnement/appareil,
+constat, version numérique, catégorie d’erreur et code de retour. Aucun texte
+brut, cookie de navigateur, mot de passe ou jeton n’est enregistré.
+
+Une notification est tentée après enregistrement de chaque mission, avec repli
+terminal si le bureau est inaccessible ; `--no-notifications` la désactive.
+Un envoi accepté par le service ne vaut pas confirmation d’affichage visuel.
+`prevost surveillance` réutilise l’inventaire persistant et active les alertes
+sans doublons pour les nouveaux appareils, sauf `--no-notifications`.
+La commande historique `mon-secret-cookie surveillance` conserve son défaut
+sans alertes et propose toujours `--notifications` explicitement.
+La surveillance ne lance aucune analyse active d’un appareil inconnu. Le nouvel
+orchestrateur n’a pas d’option de scan réseau : les missions actives historiques
+restent séparées, soumises au registre et à leurs confirmations existantes.
+
+Installation des paquets du catalogue, sans installation pendant le développement :
+
+```bash
+prevost installer-outils                      # afficher le plan LexOS
+prevost installer-outils --executer           # installer via APT et sudo
+prevost installer-outils --kali               # plan Kali déjà actif
+prevost installer-outils --kali --executer    # installer dans kali-lexos
+```
+
+L’installation exige un terminal interactif. Les paquets sans candidat APT sont
+exclus et signalés ; un résultat partiel renvoie un code non nul. Aucun dépôt,
+aucune capacité radio, ni règle sudo n’est ajouté. Les paquets déjà installés
+sont gérés par APT, sans purge ni mise à niveau générale du système. Codex et
+Ollama ne sont pas installés par ce catalogue APT ; leurs installations existantes
+sont conservées. Après installation, relancer `prevost outils --diagnostic --kali`.
+
+Validation de l’alerte normale dans le terminal de bureau LexOS, avec événement
+fictif et stockage temporaire, sans toucher aux vrais appareils :
+
+```bash
+cd /home/ti-lex-al/LexOS-Projets/mon-secret-cookie
+python3 integration/test_normal_notification.py --notifications
+```
+
+Le test graphique critique a été confirmé visuellement par l’utilisateur.
+L’affichage de l’alerte normale reste à confirmer séparément.
+
+## Vérifier les restrictions depuis l’hôte
+
+`prevost acces-hote` inspecte Podman, le conteneur existant, les dépendances,
+les UID des fichiers Lynis, les permissions des sockets locales et D-Bus. Aucune
+installation, élévation, analyse réseau ni recréation de conteneur n’est effectuée.
+Un refus dans l’environnement de l’agent reste distinct d’une panne reproduite
+sur LexOS. `--output nouveau-fichier.json` crée un export privé sans écrasement.
+
+`prevost aide-outil OUTIL` utilise le chemin LexOS, ou le chemin vérifié dans le
+conteneur déjà actif si l’outil manque sur LexOS. Un conteneur inaccessible donne
+« non vérifié dans Kali ». Il n’est pas démarré pour un diagnostic.
+
+Test de l’alerte normale depuis votre terminal de bureau :
+
+```bash
+cd /home/ti-lex-al/LexOS-Projets/mon-secret-cookie
+.venv/bin/python integration/test_normal_notification.py --programme prevost
+```
+
+Seul le voisin est fictif et l’état isolé dans un dossier temporaire. La commande,
+le titre et l’urgence de la notification sont ceux du programme normal. Le test
+notify-send critique précédemment confirmé ne confirme pas cet affichage normal.
+Voir `VALIDATION-PREVOST-DIAGNOSTICS.md` pour les résultats et commandes détaillés.

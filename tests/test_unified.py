@@ -79,10 +79,10 @@ class UnifiedTests(unittest.TestCase):
             self.assertEqual(self.call(['mission', '--cible', 'AUTH-test', '--executer'])[0], 0)
             scan.assert_called_once_with(['AUTH-test'], True)
 
-    def test_diagnostic_uses_fixed_registry(self):
-        with patch.object(fusion, 'registry', return_value={'tools': {}}) as registry:
+    def test_diagnostic_uses_local_orchestrator(self):
+        with patch('mon_secret_cookie.diagnostic_mission.run', return_value={'resultats': []}) as run:
             self.assertEqual(self.call(['diagnostic', '--kali'])[0], 0)
-            registry.assert_called_once_with(True, True)
+            run.assert_called_once_with(True, True, None)
 
     def test_existing_bridges_accept_no_arbitrary_arguments(self):
         for command in ('kali', 'ia'):

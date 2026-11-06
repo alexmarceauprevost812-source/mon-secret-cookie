@@ -1,0 +1,362 @@
+{
+  "mission": "DIAG-b394d3be241e4488978522cc10071dd6",
+  "date": "2026-11-05T13:53:59.951048+00:00",
+  "appareil": "LexOS",
+  "resultats": [
+    {
+      "outil": "nmap",
+      "date": "2026-11-05T13:53:59.942196+00:00",
+      "appareil": "LexOS",
+      "etat": "disponible",
+      "constat": "Aide/version exécutée sans analyse réseau.",
+      "version": "7.95",
+      "erreur": null,
+      "code_retour": 0
+    },
+    {
+      "outil": "tshark",
+      "date": "2026-11-05T13:53:59.943038+00:00",
+      "appareil": "LexOS",
+      "etat": "disponible",
+      "constat": "Aide/version exécutée sans analyse réseau.",
+      "version": "4.4.19",
+      "erreur": null,
+      "code_retour": 0
+    },
+    {
+      "outil": "dumpcap",
+      "date": "2026-11-05T13:53:59.943509+00:00",
+      "appareil": "LexOS",
+      "etat": "disponible",
+      "constat": "Aide/version exécutée sans analyse réseau.",
+      "version": "4.4.19",
+      "erreur": null,
+      "code_retour": 0
+    },
+    {
+      "outil": "wireshark",
+      "date": "2026-11-05T13:53:59.943983+00:00",
+      "appareil": "LexOS",
+      "etat": "disponible",
+      "constat": "Aide/version exécutée sans analyse réseau.",
+      "version": "4.4.19",
+      "erreur": null,
+      "code_retour": 0
+    },
+    {
+      "outil": "tcpdump",
+      "date": "2026-11-05T13:53:59.944035+00:00",
+      "appareil": "LexOS",
+      "etat": "disponible",
+      "constat": "Aide/version exécutée sans analyse réseau.",
+      "version": "4.99.5",
+      "erreur": null,
+      "code_retour": 0
+    },
+    {
+      "outil": "lynis",
+      "date": "2026-11-05T13:53:59.944053+00:00",
+      "appareil": "LexOS",
+      "etat": "erreur",
+      "constat": "Vérification locale échouée ou inaccessible.",
+      "version": null,
+      "erreur": "execution_indisponible",
+      "code_retour": null
+    },
+    {
+      "outil": "hashcat",
+      "date": "2026-11-05T13:53:59.945216+00:00",
+      "appareil": "LexOS",
+      "etat": "disponible",
+      "constat": "Aide/version exécutée sans analyse réseau.",
+      "version": "6.2.6",
+      "erreur": null,
+      "code_retour": 0
+    },
+    {
+      "outil": "john",
+      "date": "2026-11-05T13:53:59.945383+00:00",
+      "appareil": "LexOS",
+      "etat": "disponible",
+      "constat": "Aide/version exécutée sans analyse réseau.",
+      "version": null,
+      "erreur": null,
+      "code_retour": 0
+    },
+    {
+      "outil": "wifite",
+      "date": "2026-11-05T13:53:59.945398+00:00",
+      "appareil": "LexOS",
+      "etat": "manquant",
+      "constat": "Commande absente.",
+      "version": null,
+      "erreur": "outil_manquant",
+      "code_retour": null
+    },
+    {
+      "outil": "aircrack-ng",
+      "date": "2026-11-05T13:53:59.945646+00:00",
+      "appareil": "LexOS",
+      "etat": "disponible",
+      "constat": "Aide/version exécutée sans analyse réseau.",
+      "version": "1.7",
+      "erreur": null,
+      "code_retour": 0
+    },
+    {
+      "outil": "airodump-ng",
+      "date": "2026-11-05T13:53:59.945934+00:00",
+      "appareil": "LexOS",
+      "etat": "disponible",
+      "constat": "Aide/version exécutée sans analyse réseau.",
+      "version": "1.7",
+      "erreur": null,
+      "code_retour": 0
+    },
+    {
+      "outil": "iw",
+      "date": "2026-11-05T13:53:59.947234+00:00",
+      "appareil": "LexOS",
+      "etat": "disponible",
+      "constat": "Aide/version exécutée sans analyse réseau.",
+      "version": "6.9",
+      "erreur": null,
+      "code_retour": 0
+    },
+    {
+      "outil": "ip",
+      "date": "2026-11-05T13:53:59.947246+00:00",
+      "appareil": "LexOS",
+      "etat": "disponible",
+      "constat": "Aide/version exécutée sans analyse réseau.",
+      "version": "6.15.0",
+      "erreur": null,
+      "code_retour": 0
+    },
+    {
+      "outil": "ss",
+      "date": "2026-11-05T13:53:59.947633+00:00",
+      "appareil": "LexOS",
+      "etat": "disponible",
+      "constat": "Aide/version exécutée sans analyse réseau.",
+      "version": null,
+      "erreur": null,
+      "code_retour": 0
+    },
+    {
+      "outil": "nikto",
+      "date": "2026-11-05T13:53:59.947647+00:00",
+      "appareil": "LexOS",
+      "etat": "manquant",
+      "constat": "Commande absente.",
+      "version": null,
+      "erreur": "outil_manquant",
+      "code_retour": null
+    },
+    {
+      "outil": "sqlmap",
+      "date": "2026-11-05T13:53:59.947935+00:00",
+      "appareil": "LexOS",
+      "etat": "disponible",
+      "constat": "Aide/version exécutée sans analyse réseau.",
+      "version": "1.9.6",
+      "erreur": null,
+      "code_retour": 0
+    },
+    {
+      "outil": "gobuster",
+      "date": "2026-11-05T13:53:59.948118+00:00",
+      "appareil": "LexOS",
+      "etat": "disponible",
+      "constat": "Aide/version exécutée sans analyse réseau.",
+      "version": null,
+      "erreur": null,
+      "code_retour": 0
+    },
+    {
+      "outil": "ffuf",
+      "date": "2026-11-05T13:53:59.948627+00:00",
+      "appareil": "LexOS",
+      "etat": "disponible",
+      "constat": "Aide/version exécutée sans analyse réseau.",
+      "version": "2.1.0",
+      "erreur": null,
+      "code_retour": 0
+    },
+    {
+      "outil": "whatweb",
+      "date": "2026-11-05T13:53:59.949259+00:00",
+      "appareil": "LexOS",
+      "etat": "disponible",
+      "constat": "Aide/version exécutée sans analyse réseau.",
+      "version": "127.0.0.1",
+      "erreur": null,
+      "code_retour": 0
+    },
+    {
+      "outil": "curl",
+      "date": "2026-11-05T13:53:59.949390+00:00",
+      "appareil": "LexOS",
+      "etat": "disponible",
+      "constat": "Aide/version exécutée sans analyse réseau.",
+      "version": null,
+      "erreur": null,
+      "code_retour": 0
+    },
+    {
+      "outil": "openssl",
+      "date": "2026-11-05T13:53:59.949731+00:00",
+      "appareil": "LexOS",
+      "etat": "disponible",
+      "constat": "Aide/version exécutée sans analyse réseau.",
+      "version": null,
+      "erreur": null,
+      "code_retour": 0
+    },
+    {
+      "outil": "dig",
+      "date": "2026-11-05T13:53:59.949756+00:00",
+      "appareil": "LexOS",
+      "etat": "erreur",
+      "constat": "Vérification locale échouée ou inaccessible.",
+      "version": null,
+      "erreur": "execution_indisponible",
+      "code_retour": 1
+    },
+    {
+      "outil": "whois",
+      "date": "2026-11-05T13:53:59.949978+00:00",
+      "appareil": "LexOS",
+      "etat": "disponible",
+      "constat": "Aide/version exécutée sans analyse réseau.",
+      "version": null,
+      "erreur": null,
+      "code_retour": 0
+    },
+    {
+      "outil": "exiftool",
+      "date": "2026-11-05T13:53:59.949985+00:00",
+      "appareil": "LexOS",
+      "etat": "disponible",
+      "constat": "Aide/version exécutée sans analyse réseau.",
+      "version": "13.25",
+      "erreur": null,
+      "code_retour": 0
+    },
+    {
+      "outil": "strings",
+      "date": "2026-11-05T13:53:59.950165+00:00",
+      "appareil": "LexOS",
+      "etat": "disponible",
+      "constat": "Aide/version exécutée sans analyse réseau.",
+      "version": null,
+      "erreur": null,
+      "code_retour": 0
+    },
+    {
+      "outil": "file",
+      "date": "2026-11-05T13:53:59.950553+00:00",
+      "appareil": "LexOS",
+      "etat": "disponible",
+      "constat": "Aide/version exécutée sans analyse réseau.",
+      "version": null,
+      "erreur": null,
+      "code_retour": 0
+    },
+    {
+      "outil": "binwalk",
+      "date": "2026-11-05T13:53:59.950920+00:00",
+      "appareil": "LexOS",
+      "etat": "disponible",
+      "constat": "Aide/version exécutée sans analyse réseau.",
+      "version": "2.4.3",
+      "erreur": null,
+      "code_retour": 0
+    },
+    {
+      "outil": "radare2",
+      "date": "2026-11-05T13:53:59.950946+00:00",
+      "appareil": "LexOS",
+      "etat": "manquant",
+      "constat": "Commande absente.",
+      "version": null,
+      "erreur": "outil_manquant",
+      "code_retour": null
+    },
+    {
+      "outil": "codex",
+      "date": "2026-11-05T13:53:59.950964+00:00",
+      "appareil": "LexOS",
+      "etat": "disponible",
+      "constat": "Aide/version exécutée sans analyse réseau.",
+      "version": "0.166.0",
+      "erreur": null,
+      "code_retour": 0
+    },
+    {
+      "outil": "ollama",
+      "date": "2026-11-05T13:53:59.950982+00:00",
+      "appareil": "LexOS",
+      "etat": "disponible",
+      "constat": "Aide/version exécutée sans analyse réseau.",
+      "version": "0.40.13",
+      "erreur": null,
+      "code_retour": 0
+    },
+    {
+      "outil": "git",
+      "date": "2026-11-05T13:53:59.950990+00:00",
+      "appareil": "LexOS",
+      "etat": "disponible",
+      "constat": "Aide/version exécutée sans analyse réseau.",
+      "version": "2.47.3",
+      "erreur": null,
+      "code_retour": 0
+    },
+    {
+      "outil": "nano",
+      "date": "2026-11-05T13:53:59.951010+00:00",
+      "appareil": "LexOS",
+      "etat": "disponible",
+      "constat": "Aide/version exécutée sans analyse réseau.",
+      "version": "8.4",
+      "erreur": null,
+      "code_retour": 0
+    },
+    {
+      "outil": "python3",
+      "date": "2026-11-05T13:53:59.951018+00:00",
+      "appareil": "LexOS",
+      "etat": "disponible",
+      "constat": "Aide/version exécutée sans analyse réseau.",
+      "version": "3.13.5",
+      "erreur": null,
+      "code_retour": 0
+    },
+    {
+      "outil": "notify-send",
+      "date": "2026-11-05T13:53:59.951026+00:00",
+      "appareil": "LexOS",
+      "etat": "disponible",
+      "constat": "Aide/version exécutée sans analyse réseau.",
+      "version": "0.8.6",
+      "erreur": null,
+      "code_retour": 0
+    },
+    {
+      "outil": "conteneur-kali",
+      "date": "2026-11-05T13:53:59.951038+00:00",
+      "appareil": "kali-lexos",
+      "etat": "erreur",
+      "constat": "Vérification locale échouée ou inaccessible.",
+      "version": null,
+      "erreur": "execution_indisponible",
+      "code_retour": null
+    }
+  ],
+  "etat": "partiel",
+  "analyses_actives": false,
+  "notification": "terminal_service_indisponible",
+  "rapport_texte": "/tmp/lexos-diagnostics-check-9a44bb8t/diagnostics/cookie.txt",
+  "export_json": "/tmp/lexos-diagnostics-check-9a44bb8t/diagnostics/DIAG-b394d3be241e4488978522cc10071dd6.json"
+}

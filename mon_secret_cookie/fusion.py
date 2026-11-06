@@ -53,7 +53,9 @@ def registry(diagnostic=False, kali=False):
     if kali and not diagnostic:
         raise core.AuditError('--kali nécessite --diagnostic ; aucun conteneur lancé automatiquement.')
     entries = {}
-    for name, args in DIAGNOSTICS.items():
+    from .menu_tools import CHECKS
+    from .host_access import lynis_ownership
+    for name, args in {**CHECKS, **DIAGNOSTICS}.items():
         path = executable(name)
         entry = {'environment': 'host', 'path': path, 'installed': bool(path),
                  'status': 'found' if path else 'missing'}
@@ -62,25 +64,26 @@ def registry(diagnostic=False, kali=False):
                     p.exists() and p.stat().st_uid not in (0, os.getuid()) for p in
                     (Path('/usr/share/lynis/include/consts'), Path('/usr/share/lynis/include/functions'))):
                 entry['diagnostic'] = {'status': 'unavailable',
-                    'error': 'Propriétaires visibles incompatibles avec le contrôle Lynis ; vérifier sur le terminal hôte. Aucun contrôle contourné.'}
+                    'error': lynis_ownership()['message']+' ; vérifier sur le terminal hôte sans modification automatique.'}
             else:
                 entry['diagnostic'] = version_probe([path, *args])
+        entry['etat'] = 'manquant' if not path else ('disponible' if not diagnostic or entry.get('diagnostic',{}).get('status')=='ok' else 'erreur')
         entries[name] = entry
     entries['mon-secret-cookie'] = {
         'environment': 'current-python', 'installed': True, 'version': __version__,
-        'python': sys.executable, 'project': str(PROJECT),
+        'python': sys.executable, 'project': str(PROJECT), 'etat':'disponible',
         'command': [sys.executable, '-B', '-m', 'mon_secret_cookie'],
     }
     detected = environments.discover(executable, version_probe, diagnostic=kali)
     for name, entry in detected['tools'].items():
-        entries[name+'-kali'] = entry
+        entries[name+'-kali'] = {**entry, 'etat':'manquant' if not entry.get('installed') else ('erreur' if entry.get('diagnostic',{}).get('status')=='unavailable' else 'disponible')}
     container = (detected.get('launcher') or {}).get('container', 'kali-lexos')
     reported = environments.reported(PROJECT, container).get('tools', {})
     for name in environments.TOOLS:
         if name+'-kali' not in entries:
             entries[name+'-kali'] = {'environment': container, 'status': 'unverified',
                                     'installed': None, 'path': None, 'version': None,
-                                    'reported': reported.get(name), 'reason': detected.get('reason')}
+                                    'reported': reported.get(name), 'reason': detected.get('reason'), 'etat':'erreur'}
     return {'tools': entries, 'kali': detected, 'storage': storage(),
             'ssh_server_detected': bool(executable('sshd') or Path('/usr/sbin/sshd').is_file())}
 
@@ -98,7 +101,10 @@ def dashboard(diagnostic=False):
     return result
 
 
-def storage(path='/'):
+def storage(path=None):
+    if path is None:
+        prefix = os.environ.get('PREFIX', '')
+        path = str(Path.home()) if prefix.startswith('/data/data/com.termux/') or prefix.startswith('/data/user/0/com.termux/') else '/'
     usage = shutil.disk_usage(path)
     # Comme df : exclure les blocs réservés du dénominateur disponible à l'utilisateur.
     available_capacity = usage.used + usage.free
@@ -225,13 +231,33 @@ def existing_launcher(name):
 def parser():
     root = argparse.ArgumentParser(prog='prevost', description='Adaptateur local : préparation par défaut')
     sub = root.add_subparsers(dest='command', required=True)
+    for name in ('catalogue', 'consignes'):
+        sub.add_parser(name)
+    item = sub.add_parser('aide-outil'); item.add_argument('outil'); item.add_argument('--kali', action='store_true')
+    item = sub.add_parser('proposer'); item.add_argument('demande'); item.add_argument('--cible')
+    item = sub.add_parser('interfaces'); item.add_argument('--executer', action='store_true'); item.add_argument('--sudo', action='store_true')
+    item = sub.add_parser('nmap', help='Dialogue de scan via /kali')
+    item.add_argument('--cible'); item.add_argument('--demande', default='fais un nmap complet')
     sub.add_parser('aide', help='Afficher toutes les commandes')
     sub.add_parser('cibles', help='Consulter les autorisations enregistrées')
-    sub.add_parser('nouvelles', help='Consulter les nouveaux actifs des inventaires')
+    item = sub.add_parser('nouvelles', help='Nouvelles cibles → Autoriser la sélection')
+    item.add_argument('--autoriser', action='store_true')
+    sub.add_parser('autorisations', help='Consulter les dates, périmètres et limites')
+    item = sub.add_parser('revoquer'); item.add_argument('id')
     sub.add_parser('kali', help='Ouvrir le lanceur Kali existant')
     sub.add_parser('ia', help='Ouvrir le système IA existant')
     system = sub.add_parser('diagnostic', help='Diagnostics fixes de versions et stockage')
     system.add_argument('--kali', action='store_true')
+    system.add_argument('--no-notifications', action='store_true')
+    system.add_argument('--output', help='Nouvel export JSON privé ; aucun écrasement')
+    item=sub.add_parser('installer-outils', help='Plan APT du catalogue ; installation explicite')
+    item.add_argument('--kali', action='store_true')
+    item.add_argument('--executer', action='store_true')
+    item=sub.add_parser('surveillance', help='Inventaire passif et alertes, aucune analyse active')
+    item.add_argument('--once', action='store_true')
+    item.add_argument('--inventaire', action='store_true')
+    item.add_argument('--interval', type=float, default=30)
+    item.add_argument('--no-notifications', action='store_true')
     tools = sub.add_parser('outils')
     tools.add_argument('--diagnostic', action='store_true')
     tools.add_argument('--kali', action='store_true')
@@ -252,6 +278,8 @@ def parser():
     item.add_argument('--output'); item.add_argument('--format', choices=['json', 'txt'], default='json')
     item.add_argument('--mission')
     sub.add_parser('stockage')
+    item=sub.add_parser('acces-hote', help='Distinguer restrictions locales et état de l’hôte ; aucune réparation')
+    item.add_argument('--output',help='Nouvel export JSON privé, sans écrasement')
     item = sub.add_parser('connexion')
     item.add_argument('--host', required=True); item.add_argument('--port', type=int, default=8765)
     return root
@@ -265,18 +293,47 @@ def main(argv=None):
         return 0
     args = root.parse_args(argv)
     try:
+        from . import kali_tools
+        if os.name != 'nt' and os.geteuid() == 0:
+            raise core.AuditError('Lancez Prévost comme utilisateur normal ; sudo limité à interfaces --executer.')
+        if args.command == 'nmap':
+            from . import scan_dialogue
+            result = scan_dialogue.dialogue(args.demande, args.cible)
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+            return 1 if result['status'] == 'failed' else 0
+        if args.command in ('catalogue', 'consignes', 'aide-outil', 'proposer', 'interfaces'):
+            if args.command == 'catalogue': result = kali_tools.inventory()
+            elif args.command == 'consignes': result = {'system': kali_tools.context()}
+            elif args.command == 'aide-outil':
+                from . import menu_tools
+                result = menu_tools.routed_check(args.outil,args.kali)
+            elif args.command == 'proposer': result = kali_tools.proposal(args.demande, args.cible)
+            else: result = kali_tools.interfaces(args.executer, args.sudo)
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+            return int(result.get('etat') in ('erreur','manquant'))
         if args.command == 'aide':
             root.print_help()
             return 0
         if args.command in ('kali', 'ia'):
             existing_launcher(args.command)
             return 0
-        if args.command == 'cibles':
+        if args.command in ('cibles', 'autorisations'):
             result = targets_view()
         elif args.command == 'nouvelles':
-            result = security.new_assets(read_table('missions'))
+            from . import target_selection
+            result = target_selection.menu() if args.autoriser else target_selection.candidates()
+        elif args.command == 'revoquer':
+            result = security.revoke(args.id)
         elif args.command == 'diagnostic':
-            result = registry(True, args.kali)
+            from . import diagnostic_mission
+            result = diagnostic_mission.run(args.kali, not args.no_notifications, args.output)
+        elif args.command == 'installer-outils':
+            from . import tool_install
+            result=tool_install.install(args.kali,args.executer)
+        elif args.command == 'surveillance':
+            from . import watch
+            watch.run(args.interval,args.once,args.inventaire,notifications=not args.no_notifications)
+            return 0
         elif args.command == 'outils':
             result = registry(args.diagnostic, args.kali)
         elif args.command == 'tableau':
@@ -289,11 +346,18 @@ def main(argv=None):
             result = scan(args.cible, args.executer)
         elif args.command == 'rapport':
             result = report(args.output, args.format, args.mission)
+        elif args.command == 'acces-hote':
+            from . import host_access
+            result=host_access.report()
+            if args.output:
+                core.private_write(Path(args.output),json.dumps(result,ensure_ascii=False,indent=2)+'\n')
         elif args.command == 'stockage':
             result = storage()
         else:
             result = ssh_plan(args.host, args.port)
         print(json.dumps(result, ensure_ascii=False, indent=2))
+        if args.command=='installer-outils':
+            return int(result.get('etat')=='erreur' or bool(result.get('paquets_sans_candidat')))
         return 0
     except (core.AuditError, OSError, ValueError, sqlite3.Error) as error:
         print('Erreur : ' + (core.disk_full_hint(error) or str(error)), file=sys.stderr)

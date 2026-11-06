@@ -1,0 +1,17 @@
+{
+  "nmap": {
+    "status": "ok",
+    "returncode": 0,
+    "network_executed": false
+  },
+  "tshark": {
+    "status": "ok",
+    "returncode": 0,
+    "network_executed": false
+  },
+  "hashcat": {
+    "status": "ok",
+    "returncode": 0,
+    "network_executed": false
+  }
+}

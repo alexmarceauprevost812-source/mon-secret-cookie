@@ -1,0 +1,11 @@
+{
+  "code": 0,
+  "etat": "partiel",
+  "comptes": {
+    "disponible": 29,
+    "manquant": 3,
+    "erreur": 3
+  },
+  "notification": "terminal_service_indisponible",
+  "stockage_test": "temporaire, supprimé"
+}

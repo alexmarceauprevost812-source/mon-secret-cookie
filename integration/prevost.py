@@ -8,6 +8,9 @@ import sys
 def main():
     source = Path(__file__).resolve()
     project = source.parent.parent if source.parent.name == 'integration' else Path.home()/'LexOS-Projets/mon-secret-cookie'
+    # Conserver les anciennes fonctions du lanceur de test sans déplacer leur code.
+    if len(sys.argv) > 1 and sys.argv[1] in ('cerveau', 'programmeur'):
+        project = Path.home()/'LexOS-Projets/mon-secret-cookie-brain-test'
     python = project/'.venv/bin/python'
     if not python.is_file() or not os.access(python, os.X_OK) or not (project/'mon_secret_cookie/fusion.py').is_file():
         print('Erreur : projet ou venv existant introuvable : '+str(project), file=sys.stderr)

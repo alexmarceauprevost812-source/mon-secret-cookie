@@ -1,0 +1,38 @@
+
+PRÉVOST — DIAG-b394d3be241e4488978522cc10071dd6 — début 2026-11-05T13:53:58.154305+00:00 — aides/versions locales
+2026-11-05T13:53:59.942196+00:00 | LexOS | nmap | disponible | Aide/version exécutée sans analyse réseau. | version=7.95 | erreur=None | code=0
+2026-11-05T13:53:59.943038+00:00 | LexOS | tshark | disponible | Aide/version exécutée sans analyse réseau. | version=4.4.19 | erreur=None | code=0
+2026-11-05T13:53:59.943509+00:00 | LexOS | dumpcap | disponible | Aide/version exécutée sans analyse réseau. | version=4.4.19 | erreur=None | code=0
+2026-11-05T13:53:59.943983+00:00 | LexOS | wireshark | disponible | Aide/version exécutée sans analyse réseau. | version=4.4.19 | erreur=None | code=0
+2026-11-05T13:53:59.944035+00:00 | LexOS | tcpdump | disponible | Aide/version exécutée sans analyse réseau. | version=4.99.5 | erreur=None | code=0
+2026-11-05T13:53:59.944053+00:00 | LexOS | lynis | erreur | Vérification locale échouée ou inaccessible. | version=None | erreur=execution_indisponible | code=None
+2026-11-05T13:53:59.945216+00:00 | LexOS | hashcat | disponible | Aide/version exécutée sans analyse réseau. | version=6.2.6 | erreur=None | code=0
+2026-11-05T13:53:59.945383+00:00 | LexOS | john | disponible | Aide/version exécutée sans analyse réseau. | version=None | erreur=None | code=0
+2026-11-05T13:53:59.945398+00:00 | LexOS | wifite | manquant | Commande absente. | version=None | erreur=outil_manquant | code=None
+2026-11-05T13:53:59.945646+00:00 | LexOS | aircrack-ng | disponible | Aide/version exécutée sans analyse réseau. | version=1.7 | erreur=None | code=0
+2026-11-05T13:53:59.945934+00:00 | LexOS | airodump-ng | disponible | Aide/version exécutée sans analyse réseau. | version=1.7 | erreur=None | code=0
+2026-11-05T13:53:59.947234+00:00 | LexOS | iw | disponible | Aide/version exécutée sans analyse réseau. | version=6.9 | erreur=None | code=0
+2026-11-05T13:53:59.947246+00:00 | LexOS | ip | disponible | Aide/version exécutée sans analyse réseau. | version=6.15.0 | erreur=None | code=0
+2026-11-05T13:53:59.947633+00:00 | LexOS | ss | disponible | Aide/version exécutée sans analyse réseau. | version=None | erreur=None | code=0
+2026-11-05T13:53:59.947647+00:00 | LexOS | nikto | manquant | Commande absente. | version=None | erreur=outil_manquant | code=None
+2026-11-05T13:53:59.947935+00:00 | LexOS | sqlmap | disponible | Aide/version exécutée sans analyse réseau. | version=1.9.6 | erreur=None | code=0
+2026-11-05T13:53:59.948118+00:00 | LexOS | gobuster | disponible | Aide/version exécutée sans analyse réseau. | version=None | erreur=None | code=0
+2026-11-05T13:53:59.948627+00:00 | LexOS | ffuf | disponible | Aide/version exécutée sans analyse réseau. | version=2.1.0 | erreur=None | code=0
+2026-11-05T13:53:59.949259+00:00 | LexOS | whatweb | disponible | Aide/version exécutée sans analyse réseau. | version=127.0.0.1 | erreur=None | code=0
+2026-11-05T13:53:59.949390+00:00 | LexOS | curl | disponible | Aide/version exécutée sans analyse réseau. | version=None | erreur=None | code=0
+2026-11-05T13:53:59.949731+00:00 | LexOS | openssl | disponible | Aide/version exécutée sans analyse réseau. | version=None | erreur=None | code=0
+2026-11-05T13:53:59.949756+00:00 | LexOS | dig | erreur | Vérification locale échouée ou inaccessible. | version=None | erreur=execution_indisponible | code=1
+2026-11-05T13:53:59.949978+00:00 | LexOS | whois | disponible | Aide/version exécutée sans analyse réseau. | version=None | erreur=None | code=0
+2026-11-05T13:53:59.949985+00:00 | LexOS | exiftool | disponible | Aide/version exécutée sans analyse réseau. | version=13.25 | erreur=None | code=0
+2026-11-05T13:53:59.950165+00:00 | LexOS | strings | disponible | Aide/version exécutée sans analyse réseau. | version=None | erreur=None | code=0
+2026-11-05T13:53:59.950553+00:00 | LexOS | file | disponible | Aide/version exécutée sans analyse réseau. | version=None | erreur=None | code=0
+2026-11-05T13:53:59.950920+00:00 | LexOS | binwalk | disponible | Aide/version exécutée sans analyse réseau. | version=2.4.3 | erreur=None | code=0
+2026-11-05T13:53:59.950946+00:00 | LexOS | radare2 | manquant | Commande absente. | version=None | erreur=outil_manquant | code=None
+2026-11-05T13:53:59.950964+00:00 | LexOS | codex | disponible | Aide/version exécutée sans analyse réseau. | version=0.166.0 | erreur=None | code=0
+2026-11-05T13:53:59.950982+00:00 | LexOS | ollama | disponible | Aide/version exécutée sans analyse réseau. | version=0.40.13 | erreur=None | code=0
+2026-11-05T13:53:59.950990+00:00 | LexOS | git | disponible | Aide/version exécutée sans analyse réseau. | version=2.47.3 | erreur=None | code=0
+2026-11-05T13:53:59.951010+00:00 | LexOS | nano | disponible | Aide/version exécutée sans analyse réseau. | version=8.4 | erreur=None | code=0
+2026-11-05T13:53:59.951018+00:00 | LexOS | python3 | disponible | Aide/version exécutée sans analyse réseau. | version=3.13.5 | erreur=None | code=0
+2026-11-05T13:53:59.951026+00:00 | LexOS | notify-send | disponible | Aide/version exécutée sans analyse réseau. | version=0.8.6 | erreur=None | code=0
+2026-11-05T13:53:59.951038+00:00 | kali-lexos | conteneur-kali | erreur | Vérification locale échouée ou inaccessible. | version=None | erreur=execution_indisponible | code=None
+FIN DIAG-b394d3be241e4488978522cc10071dd6 | partiel | notification=terminal_service_indisponible

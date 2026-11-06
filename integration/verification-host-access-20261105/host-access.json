@@ -1,0 +1,230 @@
+{
+  "contexte": {
+    "uid": 1002,
+    "gid": 1002,
+    "processus": {
+      "CapEff": "0000000000000000",
+      "NoNewPrivs": "1",
+      "Seccomp": "2"
+    },
+    "uid_map": "1002          0          1",
+    "gid_map": "1002          0          1",
+    "runtime": {
+      "path": "/run/user/1002",
+      "present": true,
+      "uid": 1002,
+      "gid": 1002,
+      "mode": "0o700",
+      "lecture_seule": true
+    },
+    "libpod": {
+      "path": "/run/user/1002/libpod",
+      "present": true,
+      "uid": 1002,
+      "gid": 1002,
+      "mode": "0o1700",
+      "lecture_seule": true
+    },
+    "conclusion": "Observations de cet environnement uniquement ; état du véritable hôte à confirmer séparément."
+  },
+  "podman": {
+    "liste": {
+      "etat": "erreur",
+      "commande": [
+        "/usr/bin/podman",
+        "ps",
+        "--all",
+        "--format",
+        "{{.Names}} {{.Status}}"
+      ],
+      "code": 1,
+      "message": "Failed to obtain podman configuration: set sticky bit on: chmod /run/user/1002/libpod: read-only file system\n",
+      "categorie": "systeme_fichiers_lecture_seule"
+    },
+    "conteneur": {
+      "etat": "erreur",
+      "commande": [
+        "/usr/bin/podman",
+        "inspect",
+        "--format",
+        "{{.State.Status}}",
+        "kali-lexos"
+      ],
+      "code": 1,
+      "message": "Failed to obtain podman configuration: set sticky bit on: chmod /run/user/1002/libpod: read-only file system\n",
+      "categorie": "systeme_fichiers_lecture_seule"
+    },
+    "socket_api": {
+      "present": false,
+      "erreur": "FileNotFoundError",
+      "errno": 2
+    },
+    "note": "Le socket API est facultatif pour le CLI Podman local. Aucun storage.conf, root/runroot, conteneur ou montage modifié."
+  },
+  "dependances_podman": {
+    "etat": "disponible",
+    "commande": [
+      "/usr/bin/dpkg-query",
+      "-W",
+      "-f=${Package} ${Status} ${Version}\n",
+      "podman",
+      "uidmap",
+      "conmon",
+      "crun",
+      "slirp4netns",
+      "passt"
+    ],
+    "code": 0,
+    "message": "conmon install ok installed 2.1.12-4\ncrun install ok installed 1.21-1\npasst install ok installed 0.0~git20250503.587980c-2+deb13u1\npodman install ok installed 5.4.2+ds1-2+b2\nslirp4netns install ok installed 1.2.1-1.1\nuidmap install ok installed 1:4.17.4-2\n",
+    "categorie": null
+  },
+  "dependances_reseau": {
+    "etat": "disponible",
+    "commande": [
+      "/usr/bin/dpkg-query",
+      "-W",
+      "-f=${Package} ${Status} ${Version}\n",
+      "iproute2",
+      "iw",
+      "bind9-dnsutils",
+      "lynis"
+    ],
+    "code": 0,
+    "message": "bind9-dnsutils install ok installed 1:9.20.30-1~deb13u1\niproute2 install ok installed 6.15.0-1\niw install ok installed 6.9-1\nlynis install ok installed 3.1.4-1\n",
+    "categorie": null
+  },
+  "outils_lexos_manquants": {
+    "wifite": {
+      "present": false,
+      "kali_etat": "non_verifie"
+    },
+    "nikto": {
+      "present": false,
+      "kali_etat": "non_verifie"
+    },
+    "radare2": {
+      "present": false,
+      "kali_etat": "non_verifie"
+    }
+  },
+  "kali": {
+    "launcher": {
+      "path": "/home/ti-lex-al/.local/bin/kali",
+      "container": "kali-lexos",
+      "type": "distrobox"
+    },
+    "status": "unavailable",
+    "tools": {},
+    "reason": "Failed to obtain podman configuration: set sticky bit on: chmod /run/user/1002/libpod: read-only file system\n",
+    "failure_kind": "systeme_fichiers_lecture_seule",
+    "host_validation_required": true,
+    "host_command": "podman ps --all --format \"{{.Names}} {{.Status}}\"",
+    "note": "Restriction observée ici ; état du conteneur non déterminé. Aucun changement du stockage."
+  },
+  "lynis": {
+    "fichiers": {
+      "/usr/share/lynis/include/consts": {
+        "present": true,
+        "uid": 65534,
+        "gid": 65534,
+        "mode": "0o644",
+        "lecture_seule": true
+      },
+      "/usr/share/lynis/include/functions": {
+        "present": true,
+        "uid": 65534,
+        "gid": 65534,
+        "mode": "0o644",
+        "lecture_seule": true
+      }
+    },
+    "valide": false,
+    "message": "/usr/share/lynis/include/consts : UID observé 65534, UID requis 0 ou 1002; /usr/share/lynis/include/functions : UID observé 65534, UID requis 0 ou 1002",
+    "verification_hote": "stat -Lc \"%n uid=%u gid=%g mode=%a\" /usr/share/lynis/include/consts /usr/share/lynis/include/functions"
+  },
+  "sockets": {
+    "IPv4_UDP": {
+      "etat": "erreur",
+      "errno": 1,
+      "message": "[Errno 1] Operation not permitted",
+      "paquets_envoyes": 0
+    },
+    "IPv6_UDP": {
+      "etat": "erreur",
+      "errno": 1,
+      "message": "[Errno 1] Operation not permitted",
+      "paquets_envoyes": 0
+    },
+    "Netlink_ROUTE": {
+      "etat": "erreur",
+      "errno": 1,
+      "message": "[Errno 1] Operation not permitted",
+      "paquets_envoyes": 0
+    }
+  },
+  "commandes_locales": {
+    "ip": {
+      "etat": "erreur",
+      "commande": [
+        "/usr/bin/ip",
+        "-j",
+        "address",
+        "show"
+      ],
+      "code": 1,
+      "message": "Cannot open netlink socket: Operation not permitted\n",
+      "categorie": "acces_refuse"
+    },
+    "ss": {
+      "etat": "erreur",
+      "commande": [
+        "/usr/bin/ss",
+        "-H",
+        "-lntu"
+      ],
+      "code": 0,
+      "message": "Cannot open netlink socket: Operation not permitted\nCannot open netlink socket: Operation not permitted\n",
+      "categorie": "acces_refuse"
+    },
+    "iw": {
+      "etat": "erreur",
+      "commande": [
+        "/usr/sbin/iw",
+        "list"
+      ],
+      "code": 1,
+      "message": "Failed to connect to generic netlink.\n",
+      "categorie": "erreur_a_confirmer_sur_hote"
+    },
+    "dig": {
+      "etat": "erreur",
+      "commande": [
+        "/usr/bin/dig",
+        "-v"
+      ],
+      "code": 1,
+      "message": "net.c:136:try_proto(): socket(): Operation not permitted (1)\nnet.c:136:try_proto(): socket(): Operation not permitted (1)\n/usr/bin/dig: can't find either v4 or v6 networking\n",
+      "categorie": "acces_refuse"
+    },
+    "notifications": {
+      "etat": "erreur",
+      "commande": [
+        "/usr/bin/gdbus",
+        "call",
+        "--session",
+        "--dest",
+        "org.freedesktop.Notifications",
+        "--object-path",
+        "/org/freedesktop/Notifications",
+        "--method",
+        "org.freedesktop.Notifications.GetServerInformation"
+      ],
+      "code": 1,
+      "message": "Error connecting: Could not connect: Operation not permitted\n",
+      "categorie": "acces_refuse"
+    }
+  },
+  "aucun_scan": true,
+  "installation": false,
+  "conclusion": "Un refus ici ne prouve pas un défaut sur LexOS. Relancer prevost acces-hote dans le terminal hôte sans sudo."
+}

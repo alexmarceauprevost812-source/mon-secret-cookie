@@ -63,7 +63,7 @@ def database():
         conn.close()
 
 
-def add_target(name, owner, scope, tests, expires, proof, references=None):
+def add_target(name, owner, scope, tests, expires, proof, references=None, limits=None):
     if not all(isinstance(v, str) and v.strip() and len(v) <= 4000 for v in (name, owner, proof)):
         raise core.AuditError('Nom, responsable et preuve textuelle requis (4000 caractères maximum).')
     net = scope_network(scope)
@@ -76,6 +76,10 @@ def add_target(name, owner, scope, tests, expires, proof, references=None):
     target = {'id': 'AUTH-' + uuid.uuid4().hex, 'name': name.strip(), 'owner': owner.strip(),
               'scope': str(net), 'tests': tests, 'expires': expiration.isoformat(),
               'proof': proof.strip(), 'references': references or [], 'created': now(), 'last_scan': None}
+    if limits is not None:
+        if limits not in ({'tcp_ports': 'top100', 'privileged': False}, {'tcp_ports': '1-65535', 'privileged': False}):
+            raise core.AuditError('Limites de scan non prises en charge.')
+        target['limits'] = dict(limits)
     with database() as conn:
         conn.execute('INSERT INTO targets VALUES (?,?)', (target['id'], json.dumps(target)))
     return target
