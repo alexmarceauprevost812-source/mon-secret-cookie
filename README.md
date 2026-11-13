@@ -191,9 +191,14 @@ python3 -m venv .venv
 | `report --format json --output rapport.json` | Export des résultats déjà enregistrés |
 | `report --format txt --output rapport.txt` | Export texte |
 | `multi-report --inputs r1.json r2.json --output combo.txt` | Regroupe par `device_id` plusieurs rapports JSON exportés sur vos appareils (local, aucune lecture réseau) |
+| `journal` | Journal de bord (menu 24) : écrire, relire et chercher des notes ; questions et résumé de la semaine par l'IA locale (modèle `.gguf` via `llama-server`, chargé seulement à la première demande IA) |
+| `journal TEXTE…` | Note rapide sans ouvrir le menu, ex. `mon-secret-cookie journal pneu à changer demain` |
+| `journal --modele NOM` | Choisir le modèle `.gguf` par son nom (partiel) |
 | `menu` | Menu interactif TI-LEX |
 
 Sans argument, le menu s'ouvre dans un terminal interactif ; sinon l'aide s'affiche. Toutes les sorties d'audit sont JSON ; `cookie-guide` affiche un guide en texte. Les erreurs vont vers stderr et produisent un code non nul. Ctrl+C interrompt l'opération.
+
+Les notes du journal restent sur l'appareil, dans `journal.jsonl` du dossier d'état privé (mode 600). Elles ne sont jamais copiées dans le journal d'audit ni dans `report` ; seules les notes utiles à une question sont envoyées au modèle local sur 127.0.0.1. Sans modèle, écrire, relire et chercher fonctionnent quand même.
 
 ## Exemples
 

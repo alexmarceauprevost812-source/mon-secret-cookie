@@ -2,7 +2,7 @@
 import argparse
 import json
 import sys
-from . import core, network, cookies, passwords, lab, audit, security, diagnostics, server, cookie_organizer, ai_planner, forge
+from . import core, network, cookies, passwords, lab, audit, security, diagnostics, server, cookie_organizer, ai_planner, forge, journal
 import sqlite3
 from .branding import logo
 
@@ -47,6 +47,8 @@ def parser():
     c=s.add_parser('rapport'); c.add_argument('--output',required=True); c.add_argument('--format',choices=['json','txt'],default='json')
     c=s.add_parser('forge',help="L'IA locale (GGUF) écrit un outil ; rien ne s'exécute sans accord")
     c.add_argument('description',nargs='+'); c.add_argument('--bash',action='store_true'); c.add_argument('--modele',help='Nom (partiel) du fichier .gguf')
+    c=s.add_parser('journal',help='Journal de bord privé ; questions et résumés par l\'IA locale (GGUF)')
+    c.add_argument('note',nargs='*',help='Note rapide ; sans texte : menu du journal'); c.add_argument('--modele',help='Nom (partiel) du fichier .gguf')
     c=s.add_parser('serveur'); c.add_argument('--port',type=int,default=8765)
     return p
 
@@ -68,7 +70,7 @@ def menu():
                 '— Cookies —           '+'  '.join([e('10','Cookies locaux'),e('6','Cookie Lab'),e('13','Guide des cookies'),e('22','Ranger cookies (IA)')]),
                 '— Labo —              '+'  '.join([e('7','Password Lab'),e('8','Flask Lab')]),
                 '— Rapports —          '+'  '.join([e('11','Rapport'),e('15','Rapport multi-appareils')]),
-                '— IA locale / Security Pro — '+'  '.join([e('16','Outils'),e('17','Cibles'),e('18','Nouvelles'),e('19','Autorisations'),e('20','Mission autorisée'),e('21','Rapport missions'),e('23','Programmer un outil (IA)')]),
+                '— IA locale / Security Pro — '+'  '.join([e('16','Outils'),e('17','Cibles'),e('18','Nouvelles'),e('19','Autorisations'),e('20','Mission autorisée'),e('21','Rapport missions'),e('23','Programmer un outil (IA)'),e('24','Journal de bord (IA)')]),
                 e('0','Quitter')]
         print(green+'\n'.join(lignes)+reset)
         selection=input('TI-LEX > ').strip()
@@ -105,6 +107,8 @@ def menu():
         elif selection=='23':
             d=input("Décris l'outil que tu veux : ").strip()
             args=['forge',d] if d else None
+        elif selection=='24':
+            args=['journal']
         if args:
             main(args)
 
@@ -145,6 +149,13 @@ def main(argv=None):
             result=forge.run(' '.join(a.description),langue='bash' if a.bash else 'python',model=a.modele)
             core.record('forge',result)
             print(json.dumps(result,ensure_ascii=False,indent=2))
+            return 0
+        if a.command=='journal':
+            # Les notes sont privées : jamais copiées dans le journal d'audit ni dans les rapports.
+            if a.note:
+                journal.add(' '.join(a.note)); print('Note enregistrée.')
+            else:
+                journal.run(model=a.modele)
             return 0
         if a.command=='cookies-ranger':
             result=cookie_organizer.organize(a.dossier,execute=a.executer,use_ai=a.ia,model=a.modele,endpoint=a.endpoint)
